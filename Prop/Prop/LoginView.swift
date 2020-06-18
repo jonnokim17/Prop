@@ -18,6 +18,8 @@ struct LoginView: View {
     @State var isLoading = false
     @State var isSuccessful = false
 
+    @EnvironmentObject var user: UserStore
+
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
@@ -34,6 +36,9 @@ struct LoginView: View {
                 self.showAlert = true
             } else {
                 self.isSuccessful = true
+                self.user.isLogged = true
+                UserDefaults.standard.set(true, forKey: "isLogged")
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.isSuccessful = false
                     self.email = ""

@@ -9,8 +9,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var user: UserStore
+
     var body: some View {
-        LoginView()
+        ZStack {
+            LoginView()
+                .opacity(user.isLogged ? 0 : 1)
+            HomeView()
+                .opacity(user.isLogged ? 1 : 0)
+        }
     }
 }
 
