@@ -105,7 +105,6 @@ struct CoverView: View {
                     .offset(x: -150, y: -200)
                     .rotationEffect(Angle(degrees: show ? 360+90 : 90))
                     .blendMode(.plusDarker)
-                    .animation(nil)
                     .animation(Animation.linear(duration: 120).repeatForever(autoreverses: false))
                     .onAppear {
                         self.show = true
@@ -114,7 +113,6 @@ struct CoverView: View {
                     .offset(x: -200, y: -250)
                     .rotationEffect(Angle(degrees: show ? 360 : 0), anchor: .leading)
                     .blendMode(.overlay)
-                    .animation(nil)
                     .animation(Animation.linear(duration: 100).repeatForever(autoreverses: false))
             }
         )
