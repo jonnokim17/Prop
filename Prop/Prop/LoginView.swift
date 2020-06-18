@@ -162,7 +162,12 @@ struct CoverView: View {
                     .animation(Animation.linear(duration: 100).repeatForever(autoreverses: false))
             }
         )
-            .background(Image(uiImage: #imageLiteral(resourceName: "LoginBackground")).offset(x: viewState.width/25, y: viewState.height/25), alignment: .bottom)
+            .background(
+                Image(uiImage: #imageLiteral(resourceName: "LoginBackground"))
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .offset(x: viewState.width/25, y: viewState.height/25), alignment: .bottom
+        )
             .background(Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .scaleEffect(isDragging ? 0.9 : 1)
