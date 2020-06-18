@@ -1,0 +1,6 @@
+framework module Pods_Prop {
+  umbrella header "Pods-Prop-umbrella.h"
+
+  export *
+  module * { export * }
+}
