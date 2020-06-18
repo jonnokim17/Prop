@@ -13,6 +13,8 @@
 		90B5B523249AD7FD00342216 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90B5B522249AD7FD00342216 /* Assets.xcassets */; };
 		90B5B526249AD7FD00342216 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90B5B525249AD7FD00342216 /* Preview Assets.xcassets */; };
 		90B5B529249AD7FD00342216 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90B5B527249AD7FD00342216 /* LaunchScreen.storyboard */; };
+		90B5B531249ADF7400342216 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B5B530249ADF7400342216 /* LoginView.swift */; };
+		90B5B533249AE40B00342216 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B5B532249AE40B00342216 /* BlurView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		90B5B525249AD7FD00342216 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		90B5B528249AD7FD00342216 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		90B5B52A249AD7FD00342216 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		90B5B530249ADF7400342216 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		90B5B532249AE40B00342216 /* BlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +63,8 @@
 				90B5B51C249AD7FC00342216 /* AppDelegate.swift */,
 				90B5B51E249AD7FC00342216 /* SceneDelegate.swift */,
 				90B5B520249AD7FC00342216 /* ContentView.swift */,
+				90B5B530249ADF7400342216 /* LoginView.swift */,
+				90B5B532249AE40B00342216 /* BlurView.swift */,
 				90B5B522249AD7FD00342216 /* Assets.xcassets */,
 				90B5B527249AD7FD00342216 /* LaunchScreen.storyboard */,
 				90B5B52A249AD7FD00342216 /* Info.plist */,
@@ -148,6 +154,8 @@
 			files = (
 				90B5B51D249AD7FC00342216 /* AppDelegate.swift in Sources */,
 				90B5B51F249AD7FC00342216 /* SceneDelegate.swift in Sources */,
+				90B5B533249AE40B00342216 /* BlurView.swift in Sources */,
+				90B5B531249ADF7400342216 /* LoginView.swift in Sources */,
 				90B5B521249AD7FC00342216 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
