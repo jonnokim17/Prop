@@ -128,8 +128,9 @@ struct LoginView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .padding()
+                .offset(y: isFocused ? -120 : 0)
             }
-            .offset(y: isFocused ? -260 : 0)
+            .offset(y: isFocused ? -200 : 0)
             .animation(.easeInOut)
             .onTapGesture {
                 self.isFocused = false
