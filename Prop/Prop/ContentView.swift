@@ -15,8 +15,16 @@ struct ContentView: View {
         ZStack {
             LoginView()
                 .opacity(user.isLogged ? 0 : 1)
-            HomeView()
-                .opacity(user.isLogged ? 1 : 0)
+            TabView {
+                HomeView().tabItem({
+                    Image(systemName: "person.fill")
+                    Text("Home")
+                }).tag(0)
+                SettingsView().tabItem({
+                    Image(systemName: "gear")
+                    Text("Settings")
+                }).tag(1)
+            }.opacity(user.isLogged ? 1 : 0)
         }
     }
 }
