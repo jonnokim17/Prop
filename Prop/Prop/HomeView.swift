@@ -13,6 +13,7 @@ struct HomeView: View {
     @EnvironmentObject var user: UserStore
     @State var showAlert = false
     @State var sectionData = [Section]()
+    @State var showPropCompose = false
 
     let db = Firestore.firestore()
 
@@ -23,11 +24,19 @@ struct HomeView: View {
                     .font(.system(size: 28, weight: .bold))
                 Spacer()
                 Button(action: {
-//                    self.addFireStoreDB()
+                    self.showPropCompose.toggle()
                 }) {
                     Image(systemName: "square.and.pencil")
-                        .resizable()
-                        .frame(width: 36, height: 36)
+                        .renderingMode(.original)
+                        .font(.system(size: 18, weight: .medium))
+                        .frame(width: 44, height: 44)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                        .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
+                }
+                .sheet(isPresented: $showPropCompose) {
+                    ComposeView()
                 }
             }
             .padding()

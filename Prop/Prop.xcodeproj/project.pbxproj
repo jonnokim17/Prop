@@ -26,6 +26,7 @@
 		90B5B529249AD7FD00342216 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90B5B527249AD7FD00342216 /* LaunchScreen.storyboard */; };
 		90B5B531249ADF7400342216 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B5B530249ADF7400342216 /* LoginView.swift */; };
 		90B5B533249AE40B00342216 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B5B532249AE40B00342216 /* BlurView.swift */; };
+		90C15361249EC8FE00485A63 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C15360249EC8FE00485A63 /* ComposeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		90B5B52A249AD7FD00342216 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90B5B530249ADF7400342216 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		90B5B532249AE40B00342216 /* BlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
+		90C15360249EC8FE00485A63 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
 		BD741F2A6A40EF011A3DE355 /* Pods_Prop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Prop.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE8413250F7F8270DC39982B /* Pods-Prop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Prop.debug.xcconfig"; path = "Target Support Files/Pods-Prop/Pods-Prop.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -129,6 +131,7 @@
 				90B5B530249ADF7400342216 /* LoginView.swift */,
 				90215F43249B33E900082D45 /* HomeView.swift */,
 				906DDB63249D87BC00A687BD /* SettingsView.swift */,
+				90C15360249EC8FE00485A63 /* ComposeView.swift */,
 				90215F39249B281100082D45 /* LoadingView.swift */,
 				90215F3D249B299500082D45 /* SuccessView.swift */,
 				90215F38249B26B400082D45 /* Utilities */,
@@ -283,6 +286,7 @@
 				90B5B521249AD7FC00342216 /* ContentView.swift in Sources */,
 				90215F42249B309600082D45 /* UserStore.swift in Sources */,
 				90215F3A249B281100082D45 /* LoadingView.swift in Sources */,
+				90C15361249EC8FE00485A63 /* ComposeView.swift in Sources */,
 				90215F36249B269900082D45 /* LottieView.swift in Sources */,
 				906DDB64249D87BC00A687BD /* SettingsView.swift in Sources */,
 			);
