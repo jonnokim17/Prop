@@ -7,49 +7,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8D33476C-2849-4DBA-972D-0CEAF1B4E59E"
+            uuid = "D4B92DEC-099C-4DA7-96C9-B7AE4400D694"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Prop/HomeView.swift"
+            filePath = "Prop/Utilities/DataStore.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
-            landmarkName = "body"
-            landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "8D33476C-2849-4DBA-972D-0CEAF1B4E59E - 263fd97379be8a62"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 () -&gt; () in Prop.HomeView.body.getter : some"
-                  moduleName = "Prop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jonathankim/Documents/Prop/Prop/Prop/HomeView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56"
-                  offsetFromSymbolStart = "87">
-               </Location>
-               <Location
-                  uuid = "8D33476C-2849-4DBA-972D-0CEAF1B4E59E - 309ac31bf02d94fc"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Array&lt;Prop.Section&gt;) -&gt; () in closure #2 () -&gt; () in Prop.HomeView.body.getter : some"
-                  moduleName = "Prop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jonathankim/Documents/Prop/Prop/Prop/HomeView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "57"
-                  endingLineNumber = "57"
-                  offsetFromSymbolStart = "42">
-               </Location>
-            </Locations>
+            startingLineNumber = "49"
+            endingLineNumber = "49">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

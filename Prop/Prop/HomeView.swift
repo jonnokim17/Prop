@@ -12,7 +12,7 @@ import Firebase
 struct HomeView: View {
     @EnvironmentObject var user: UserStore
     @State var showAlert = false
-    @State var sectionData = [Section]()
+    @ObservedObject var store = DataStore()
     @State var showPropCompose = false
 
     let db = Firestore.firestore()
@@ -36,14 +36,14 @@ struct HomeView: View {
                         .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
                 }
                 .sheet(isPresented: $showPropCompose) {
-                    ComposeView()
+                    ComposeView(store: self.store)
                 }
             }
             .padding()
 
             ScrollView {
                 VStack(spacing: 24) {
-                    ForEach(sectionData) { item in
+                    ForEach(store.props) { item in
                         SectionView(section: item)
                     }
                 }
@@ -52,14 +52,9 @@ struct HomeView: View {
 
             Spacer()
         }
-        .onAppear {
-            self.getProps { (section) in
-                self.sectionData = section
-            }
-        }
     }
 
-    func getProps(completion: @escaping([Section]) -> ()) {
+    func getProps(completion: @escaping([Prop]) -> ()) {
         let currentUserId = Auth.auth().currentUser?.uid ?? ""
         db.collection("props").whereField("bettors", arrayContains: currentUserId).getDocuments { (snapshot, error) in
             if let error = error {
@@ -67,12 +62,12 @@ struct HomeView: View {
             } else {
                 if let snapshot = snapshot {
                     let documents = snapshot.documents.map { $0.data() }
-                    var sectionData = [Section]()
+                    var sectionData = [Prop]()
 
                     for propDocument in documents {
                         if let proposal = propDocument["proposal"] as? String, let opponent = propDocument["bettors"] as? [String], let uid = opponent.first {
 
-                            let section = Section(proposal: proposal, opponent: uid)
+                            let section = Prop(proposal: proposal, opponent: uid)
                             sectionData.append(section)
                         }
                     }
@@ -101,7 +96,7 @@ struct HomeView_Previews: PreviewProvider {
 }
 
 struct SectionView: View {
-    var section: Section
+    var section: Prop
 
     var body: some View {
         VStack(spacing: 30) {
@@ -120,7 +115,7 @@ struct SectionView: View {
     }
 }
 
-struct Section: Identifiable {
+struct Prop: Identifiable {
     var id = UUID()
     var proposal: String
     var opponent: String

@@ -15,6 +15,8 @@ struct ComposeView: View {
     @State private var message = ""
     @State private var textStyle = UIFont.TextStyle.body
 
+    @ObservedObject var store: DataStore
+
     var body: some View {
         VStack(spacing: 24) {
             Text("Enter your prop bet here")
@@ -37,14 +39,21 @@ struct ComposeView: View {
 
                     // passing dummy data
                     self.db.collection("props").addDocument(data: [
-                        "createdAt": Date(),
-                        "acceptedAt": acceptedAtDate,
-                        "endingAt": endingAtDate,
-                        "proposal": self.message,
-                        "bettors": [
-                            Auth.auth().currentUser?.uid ?? "",
-                            "fcl1aTMulYeAFCLDdPEgI972EZJ3" // dko's uid
-                        ]])
+                    "createdAt": Date(),
+                    "acceptedAt": acceptedAtDate,
+                    "endingAt": endingAtDate,
+                    "proposal": self.message,
+                    "bettors": [
+                        Auth.auth().currentUser?.uid ?? "",
+                        "fcl1aTMulYeAFCLDdPEgI972EZJ3" // dko's uid
+                        ]]) { (error) in
+                            if let error = error {
+                                print(error.localizedDescription)
+                            } else {
+                                let prop = Prop(proposal: self.message, opponent: "fcl1aTMulYeAFCLDdPEgI972EZJ3")
+                                self.store.addProp(prop: prop)
+                            }
+                    }
                 }) {
                 Text("Prop!")
                 }
@@ -62,6 +71,6 @@ struct ComposeView: View {
 
 struct ComposeView_Previews: PreviewProvider {
     static var previews: some View {
-        ComposeView()
+        ComposeView(store: DataStore())
     }
 }
