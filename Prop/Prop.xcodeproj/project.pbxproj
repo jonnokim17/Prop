@@ -27,6 +27,7 @@
 		90B5B531249ADF7400342216 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B5B530249ADF7400342216 /* LoginView.swift */; };
 		90B5B533249AE40B00342216 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B5B532249AE40B00342216 /* BlurView.swift */; };
 		90C15361249EC8FE00485A63 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C15360249EC8FE00485A63 /* ComposeView.swift */; };
+		90C15363249ECD7500485A63 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C15362249ECD7500485A63 /* TextView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		90B5B530249ADF7400342216 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		90B5B532249AE40B00342216 /* BlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
 		90C15360249EC8FE00485A63 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
+		90C15362249ECD7500485A63 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		BD741F2A6A40EF011A3DE355 /* Pods_Prop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Prop.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE8413250F7F8270DC39982B /* Pods-Prop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Prop.debug.xcconfig"; path = "Target Support Files/Pods-Prop/Pods-Prop.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -99,6 +101,7 @@
 			children = (
 				90B5B532249AE40B00342216 /* BlurView.swift */,
 				90215F35249B269900082D45 /* LottieView.swift */,
+				90C15362249ECD7500485A63 /* TextView.swift */,
 				90215F41249B309600082D45 /* UserStore.swift */,
 			);
 			path = Utilities;
@@ -280,6 +283,7 @@
 				90215F3E249B299500082D45 /* SuccessView.swift in Sources */,
 				90B5B51D249AD7FC00342216 /* AppDelegate.swift in Sources */,
 				90B5B51F249AD7FC00342216 /* SceneDelegate.swift in Sources */,
+				90C15363249ECD7500485A63 /* TextView.swift in Sources */,
 				90215F44249B33E900082D45 /* HomeView.swift in Sources */,
 				90B5B533249AE40B00342216 /* BlurView.swift in Sources */,
 				90B5B531249ADF7400342216 /* LoginView.swift in Sources */,

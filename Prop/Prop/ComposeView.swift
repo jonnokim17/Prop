@@ -7,10 +7,56 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct ComposeView: View {
+    let db = Firestore.firestore()
+
+    @State private var message = ""
+    @State private var textStyle = UIFont.TextStyle.body
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 24) {
+            Text("Enter your prop bet here")
+                .font(.system(size: 24, weight: .bold))
+                .padding()
+            TextView(text: $message, textStyle: $textStyle)
+                .padding(.horizontal)
+                .frame(height: 240)
+                .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 20)
+            HStack {
+                Spacer()
+                Button(action: {
+                    var acceptedAtDay = DateComponents()
+                    acceptedAtDay.day = 5
+                    let acceptedAtDate = Calendar.current.date(byAdding: acceptedAtDay, to: Date()) ?? Date()
+
+                    var endingAtDay = DateComponents()
+                    endingAtDay.day = 30
+                    let endingAtDate = Calendar.current.date(byAdding: endingAtDay, to: Date()) ?? Date()
+
+                    // passing dummy data
+                    self.db.collection("props").addDocument(data: [
+                        "createdAt": Date(),
+                        "acceptedAt": acceptedAtDate,
+                        "endingAt": endingAtDate,
+                        "proposal": self.message,
+                        "bettors": [
+                            Auth.auth().currentUser?.uid ?? "",
+                            "fcl1aTMulYeAFCLDdPEgI972EZJ3" // dko's uid
+                        ]])
+                }) {
+                Text("Prop!")
+                }
+            }
+            .padding(.horizontal, 30)
+            .padding(.vertical)
+            Spacer()
+        }
+    }
+
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
