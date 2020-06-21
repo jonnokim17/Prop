@@ -50,7 +50,7 @@ struct ComposeView: View {
                             if let error = error {
                                 print(error.localizedDescription)
                             } else {
-                                let prop = Prop(proposal: self.message, opponent: "fcl1aTMulYeAFCLDdPEgI972EZJ3")
+                                let prop = Prop(proposal: self.message, opponent: "fcl1aTMulYeAFCLDdPEgI972EZJ3", show: false)
                                 self.store.addProp(prop: prop)
                             }
                     }

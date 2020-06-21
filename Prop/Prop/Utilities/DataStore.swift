@@ -30,7 +30,7 @@ class DataStore: ObservableObject {
                     for propDocument in documents {
                         if let proposal = propDocument["proposal"] as? String, let opponent = propDocument["bettors"] as? [String], let uid = opponent.first {
 
-                            let section = Prop(proposal: proposal, opponent: uid)
+                            let section = Prop(proposal: proposal, opponent: uid, show: false)
                             sectionData.append(section)
                         }
                     }

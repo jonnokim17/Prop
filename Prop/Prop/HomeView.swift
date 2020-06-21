@@ -9,48 +9,74 @@
 import SwiftUI
 import Firebase
 
+let screen = UIScreen.main.bounds
+
 struct HomeView: View {
     @EnvironmentObject var user: UserStore
     @State var showAlert = false
     @ObservedObject var store = DataStore()
     @State var showPropCompose = false
+    @State var show = false
+    @State var active = false
+    @State var activeIndex = -1
 
     let db = Firestore.firestore()
 
     var body: some View {
-        VStack {
-            HStack {
-                Text("Prop!")
-                    .font(.system(size: 28, weight: .bold))
-                Spacer()
-                Button(action: {
-                    self.showPropCompose.toggle()
-                }) {
-                    Image(systemName: "square.and.pencil")
-                        .renderingMode(.original)
-                        .font(.system(size: 18, weight: .medium))
-                        .frame(width: 44, height: 44)
-                        .background(Color.white)
-                        .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
-                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
-                }
-                .sheet(isPresented: $showPropCompose) {
-                    ComposeView(store: self.store)
-                }
-            }
-            .padding()
+        ZStack {
+            Color.black.opacity(active ? 0.5 : 0)
+                .animation(.linear)
+                .edgesIgnoringSafeArea(.all)
 
             ScrollView {
                 VStack(spacing: 24) {
-                    ForEach(store.props) { item in
-                        SectionView(section: item)
+                    HStack {
+                        Text("Props")
+                            .font(.largeTitle).bold()
+                            .frame(width: 100)
+                            .padding(.leading, 24)
+                            .blur(radius: active ? 20 : 0)
+                            Spacer()
+                        Button(action: {
+                            self.showPropCompose.toggle()
+                        }) {
+                            Image(systemName: "square.and.pencil")
+                                .renderingMode(.original)
+                                .font(.system(size: 18, weight: .medium))
+                                .frame(width: 44, height: 44)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+                                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
+                                .blur(radius: active ? 20 : 0)
+                        }
+                        .sheet(isPresented: $showPropCompose) {
+                            ComposeView(store: self.store)
+                        }
+                    }
+                    .padding()
+
+                    ForEach(store.props.indices, id: \.self) { index in
+                        GeometryReader { geomtry in
+                            PropView(
+                                show: self.$store.props[index].show,
+                                active: self.$active,
+                                index: index, activeIndex: self.$activeIndex,
+                                prop: self.store.props[index]
+                            )
+                                .offset(y: self.store.props[index].show ? -geomtry.frame(in: .global).minY : 0)
+                                .opacity(self.activeIndex != index && self.active ? 0 : 1)
+                                .scaleEffect(self.activeIndex != index && self.active ? 0.5 : 1)
+                                .offset(x: self.activeIndex != index && self.active ? screen.width : 0)
+                        }
+                        .frame(height: 280)
+                        .frame(maxWidth: self.store.props[index].show ? .infinity : screen.width - 60)
+                        .zIndex(self.store.props[index].show ? 1 : 0)
                     }
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: screen.width)
+                .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0))
             }
-
-            Spacer()
         }
     }
 
@@ -67,7 +93,7 @@ struct HomeView: View {
                     for propDocument in documents {
                         if let proposal = propDocument["proposal"] as? String, let opponent = propDocument["bettors"] as? [String], let uid = opponent.first {
 
-                            let section = Prop(proposal: proposal, opponent: uid)
+                            let section = Prop(proposal: proposal, opponent: uid, show: false)
                             sectionData.append(section)
                         }
                     }
@@ -95,23 +121,57 @@ struct HomeView_Previews: PreviewProvider {
     }
 }
 
-struct SectionView: View {
-    var section: Prop
+struct PropView: View {
+    @Binding var show: Bool
+    @Binding var active: Bool
+    var index: Int
+    @Binding var activeIndex: Int
+
+    var prop: Prop
 
     var body: some View {
-        VStack(spacing: 30) {
-            Text(section.proposal)
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(.white)
-                .frame(width: 160)
-            Text(section.opponent)
-                .font(.system(.subheadline))
-                .foregroundColor(.white)
+        ZStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 30.0) {
+                Text("Prop Info")
+                    .font(.title).bold()
+                Text("Proposal: \(prop.proposal)")
+                Text("Opponent: \(prop.opponent)")
+            }
+            .padding(30)
+            .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
+            .offset(y: show ? 460 : 0)
+//            .background(Color.white)
+//            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+//            .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 20)
+//            .opacity(show ? 1 : 0)
+
+            VStack(spacing: 30) {
+                Text(prop.proposal)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 160)
+                Text(prop.opponent)
+                    .font(.system(.subheadline))
+                    .foregroundColor(.white)
+            }
+            .padding(show ? 30 : 20)
+            .padding(.top, show ? 30 : 0)
+            .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 460 : 280)
+            .background(Color.blue)
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
+            .onTapGesture {
+                self.show.toggle()
+                self.active.toggle()
+                if self.show {
+                    self.activeIndex = self.index
+                } else {
+                    self.activeIndex = -1
+                }
+            }
         }
-        .frame(width: 340, height: 280)
-        .background(Color.blue)
-        .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-        .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
+        .frame(height: show ? screen.height : 280)
+        .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0))
     }
 }
 
@@ -119,6 +179,7 @@ struct Prop: Identifiable {
     var id = UUID()
     var proposal: String
     var opponent: String
+    var show: Bool
 }
 
 //    func addFireStoreDB() {
