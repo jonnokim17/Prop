@@ -79,39 +79,6 @@ struct HomeView: View {
             }
         }
     }
-
-    func getProps(completion: @escaping([Prop]) -> ()) {
-        let currentUserId = Auth.auth().currentUser?.uid ?? ""
-        db.collection("props").whereField("bettors", arrayContains: currentUserId).getDocuments { (snapshot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                if let snapshot = snapshot {
-                    let documents = snapshot.documents.map { $0.data() }
-                    var sectionData = [Prop]()
-
-                    for propDocument in documents {
-                        if let proposal = propDocument["proposal"] as? String, let opponent = propDocument["bettors"] as? [String], let uid = opponent.first {
-
-                            let section = Prop(proposal: proposal, opponent: uid, show: false)
-                            sectionData.append(section)
-                        }
-                    }
-
-                    return completion(sectionData)
-
-                }
-            }
-        }
-    }
-
-    func getFriend(uid: String, completion: @escaping(String) -> ()) {
-        db.collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-            if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String {
-                completion(userFirstName)
-            }
-        }
-    }
 }
 
 
@@ -128,6 +95,7 @@ struct PropView: View {
     @Binding var activeIndex: Int
 
     var prop: Prop
+    @State var opponentName = ""
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -135,7 +103,7 @@ struct PropView: View {
                 Text("Prop Info")
                     .font(.title).bold()
                 Text("Proposal: \(prop.proposal)")
-                Text("Opponent: \(prop.opponent)")
+                Text("Opponent: \(opponentName)")
             }
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
@@ -172,6 +140,19 @@ struct PropView: View {
         }
         .frame(height: show ? screen.height : 280)
         .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0))
+        .onAppear {
+            self.getFriend(uid: self.prop.opponent) { (name) in
+                self.opponentName = name
+            }
+        }
+    }
+
+    func getFriend(uid: String, completion: @escaping(String) -> ()) {
+        Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
+            if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String {
+                completion(userFirstName)
+            }
+        }
     }
 }
 

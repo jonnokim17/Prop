@@ -44,8 +44,8 @@ struct ComposeView: View {
                     "endingAt": endingAtDate,
                     "proposal": self.message,
                     "bettors": [
-                        Auth.auth().currentUser?.uid ?? "",
-                        "fcl1aTMulYeAFCLDdPEgI972EZJ3" // dko's uid
+                        "fcl1aTMulYeAFCLDdPEgI972EZJ3", // dko's uid
+                        Auth.auth().currentUser?.uid ?? ""
                         ]]) { (error) in
                             if let error = error {
                                 print(error.localizedDescription)
