@@ -14,6 +14,7 @@ struct ComposeView: View {
 
     @State private var message = ""
     @State private var textStyle = UIFont.TextStyle.body
+    @State private var showSearchView = false
 
     @ObservedObject var store: DataStore
 
@@ -29,6 +30,14 @@ struct ComposeView: View {
                 .frame(height: 240)
                 .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 20)
             HStack {
+                Button(action: {
+                    self.showSearchView.toggle()
+                }) {
+                Text("Search Friends")
+                }
+                .sheet(isPresented: $showSearchView) {
+                    SearchView()
+                }
                 Spacer()
                 Button(action: {
                     var acceptedAtDay = DateComponents()
