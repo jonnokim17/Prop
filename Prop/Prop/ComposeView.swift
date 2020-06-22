@@ -16,6 +16,7 @@ struct ComposeView: View {
     @State private var textStyle = UIFont.TextStyle.body
     @State private var showSearchView = false
     @State var selectedFriend = ""
+    @State var selectedFriendUid = ""
 
     @ObservedObject var store: DataStore
 
@@ -37,7 +38,7 @@ struct ComposeView: View {
                     Text(selectedFriend.isEmpty ? "Search Friends" : selectedFriend)
                 }
                 .sheet(isPresented: $showSearchView) {
-                    SearchView(selectedFriend: self.$selectedFriend)
+                    SearchView(selectedFriend: self.$selectedFriend, selectedFriendUid: self.$selectedFriendUid)
                 }
                 Spacer()
                 Button(action: {
@@ -56,13 +57,13 @@ struct ComposeView: View {
                     "endingAt": endingAtDate,
                     "proposal": self.message,
                     "bettors": [
-                        "fcl1aTMulYeAFCLDdPEgI972EZJ3", // dko's uid
+                        self.selectedFriendUid,
                         Auth.auth().currentUser?.uid ?? ""
                         ]]) { (error) in
                             if let error = error {
                                 print(error.localizedDescription)
                             } else {
-                                let prop = Prop(proposal: self.message, opponent: "fcl1aTMulYeAFCLDdPEgI972EZJ3", show: false)
+                                let prop = Prop(proposal: self.message, opponent: self.selectedFriendUid, show: false)
                                 self.store.addProp(prop: prop)
                                 self.presentationMode.wrappedValue.dismiss()
                             }
@@ -70,6 +71,7 @@ struct ComposeView: View {
                 }) {
                 Text("Prop!")
                 }
+                .disabled(self.selectedFriend.isEmpty ? true : false )
             }
             .padding(.horizontal, 30)
             .padding(.vertical)

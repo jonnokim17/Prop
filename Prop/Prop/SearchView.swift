@@ -12,9 +12,10 @@ import Firebase
 struct SearchView: View {
     @State private var searchData = ""
     @State private var showAction = false
-    @State private var friendsArray = [String]()
+    @State private var friendsArray = [[String: String]]()
 
     @Binding var selectedFriend: String
+    @Binding var selectedFriendUid: String
 
     @EnvironmentObject var user: UserStore
     @Environment(\.presentationMode) private var presentationMode
@@ -24,14 +25,15 @@ struct SearchView: View {
             SearchBar(text: $searchData)
                 .padding()
             List {
-                ForEach(self.friendsArray.filter { return searchData.isEmpty ? true : $0.lowercased().contains(self.searchData.lowercased())
+                ForEach(self.friendsArray.filter { return searchData.isEmpty ? true : ($0["firstName"] ?? "").lowercased().contains(self.searchData.lowercased())
                 }, id: \.self) { data in
                     HStack {
                         Button(action: {
-                            self.selectedFriend = data
+                            self.selectedFriend = data["firstName"] ?? ""
+                            self.selectedFriendUid = data["uid"] ?? ""
                             self.presentationMode.wrappedValue.dismiss()
                         }) {
-                            Text(data)
+                            Text(data["firstName"] ?? "")
                         }
                         Spacer()
                     }
@@ -57,8 +59,9 @@ struct SearchView: View {
     func getFriends(uids: [String]) {
         for uid in uids {
             Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-                if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String {
-                    self.friendsArray.append(userFirstName)
+                if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String, let uid = document["uid"] as? String {
+                    let dictToAdd = ["firstName": userFirstName, "uid": uid]
+                    self.friendsArray.append(dictToAdd)
                 }
             }
         }
@@ -67,7 +70,7 @@ struct SearchView: View {
 
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchView(selectedFriend: .constant(""))
+        SearchView(selectedFriend: .constant(""), selectedFriendUid: .constant(""))
     }
 }
 
