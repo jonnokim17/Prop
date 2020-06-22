@@ -14,7 +14,10 @@ struct SearchView: View {
     @State private var showAction = false
     @State private var friendsArray = [String]()
 
+    @Binding var selectedFriend: String
+
     @EnvironmentObject var user: UserStore
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         VStack {
@@ -23,7 +26,12 @@ struct SearchView: View {
             List {
                 ForEach(self.friendsArray, id: \.self) { data in
                     HStack {
+                        Button(action: {
+                            self.selectedFriend = data
+                            self.presentationMode.wrappedValue.dismiss()
+                        }) {
                         Text(data)
+                        }
                         Spacer()
                     }
                     .padding()
@@ -58,7 +66,7 @@ struct SearchView: View {
 
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchView()
+        SearchView(selectedFriend: .constant(""))
     }
 }
 

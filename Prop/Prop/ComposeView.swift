@@ -15,6 +15,7 @@ struct ComposeView: View {
     @State private var message = ""
     @State private var textStyle = UIFont.TextStyle.body
     @State private var showSearchView = false
+    @State var selectedFriend = ""
 
     @ObservedObject var store: DataStore
 
@@ -33,10 +34,10 @@ struct ComposeView: View {
                 Button(action: {
                     self.showSearchView.toggle()
                 }) {
-                Text("Search Friends")
+                    Text(selectedFriend.isEmpty ? "Search Friends" : selectedFriend)
                 }
                 .sheet(isPresented: $showSearchView) {
-                    SearchView()
+                    SearchView(selectedFriend: self.$selectedFriend)
                 }
                 Spacer()
                 Button(action: {
