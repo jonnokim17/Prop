@@ -17,6 +17,8 @@ struct ComposeView: View {
 
     @ObservedObject var store: DataStore
 
+    @Environment(\.presentationMode) private var presentationMode
+
     var body: some View {
         VStack(spacing: 24) {
             Text("Enter your prop bet here")
@@ -52,6 +54,7 @@ struct ComposeView: View {
                             } else {
                                 let prop = Prop(proposal: self.message, opponent: "fcl1aTMulYeAFCLDdPEgI972EZJ3", show: false)
                                 self.store.addProp(prop: prop)
+                                self.presentationMode.wrappedValue.dismiss()
                             }
                     }
                 }) {
