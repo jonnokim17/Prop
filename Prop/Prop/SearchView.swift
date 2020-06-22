@@ -24,13 +24,14 @@ struct SearchView: View {
             SearchBar(text: $searchData)
                 .padding()
             List {
-                ForEach(self.friendsArray, id: \.self) { data in
+                ForEach(self.friendsArray.filter { return searchData.isEmpty ? true : $0.lowercased().contains(self.searchData.lowercased())
+                }, id: \.self) { data in
                     HStack {
                         Button(action: {
                             self.selectedFriend = data
                             self.presentationMode.wrappedValue.dismiss()
                         }) {
-                        Text(data)
+                            Text(data)
                         }
                         Spacer()
                     }
