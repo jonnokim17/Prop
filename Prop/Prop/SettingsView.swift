@@ -9,9 +9,17 @@
 import SwiftUI
 import Firebase
 
+let ServerKey = "AAAASRQEUjg:APA91bHu8frbx_UlKFLZCwtfWBwFPA1fNkyC0oZQRoVKSai_75fc_bkDFqh4d25hHomyE6bAPlb5WaO06QiOqLCFsCJ10C9aQHXfkJ2MNpc7krBQA6LsF0bUjnadr7LiUN_gdApPnKu_"
+let ReceiverFCMToken = "c77c0YUDckB8qsuhuV6Lx8:APA91bH8x0oJc0tDEhy8u55dPiJrWRZy6j54moVehblp25Mx8Xv3XSBASGzcFSD2gQVHHwoUF6TOL52AVS062oOcXHKySfkOUjEz_GQnTRkIpEQHLK3VVZon4-ho-btf10b6lUNM_yKy"
+
 struct SettingsView: View {
     @EnvironmentObject var user: UserStore
     @State var showAlert = false
+
+    @State private var fcmTokenMessage = "fcmTokenMessage"
+    @State private var instanceIDTokenMessage = "instanceIDTokenMessage"
+    @State private var notificationTitle: String = ""
+    @State private var notificationContent: String = ""
 
     var body: some View {
         VStack {
@@ -40,8 +48,44 @@ struct SettingsView: View {
             }
             .padding()
 
+            TextField("Add Notification Title", text: $notificationTitle).textFieldStyle(RoundedBorderTextFieldStyle()).padding(8)
+            TextField("Add Notification Content", text: $notificationContent).textFieldStyle(RoundedBorderTextFieldStyle()).padding(8)
+            Button(action: {self.sendMessageToUser(to: ReceiverFCMToken, title: self.notificationTitle, body: self.notificationContent)
+                self.notificationTitle = ""
+                self.notificationContent = ""
+            }) {
+                Text("Send message to User").font(.title)
+            }.padding(8)
+
             Spacer()
         }
+    }
+
+    func sendMessageToUser(to token: String, title: String, body: String) {
+        print("sendMessageTouser()")
+        let urlString = "https://fcm.googleapis.com/fcm/send"
+        let url = NSURL(string: urlString)!
+        let paramString: [String : Any] = ["to" : token,
+                                           "notification" : ["title" : title, "body" : body],
+                                           "data" : ["user" : "test_id"]
+        ]
+        let request = NSMutableURLRequest(url: url as URL)
+        request.httpMethod = "POST"
+        request.httpBody = try? JSONSerialization.data(withJSONObject:paramString, options: [.prettyPrinted])
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("key=\(ServerKey)", forHTTPHeaderField: "Authorization")
+        let task =  URLSession.shared.dataTask(with: request as URLRequest)  { (data, response, error) in
+            do {
+                if let jsonData = data {
+                    if let jsonDataDict  = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: AnyObject] {
+                        print("Received data:\n\(jsonDataDict))")
+                    }
+                }
+            } catch let err as NSError {
+                print(err.debugDescription)
+            }
+        }
+        task.resume()
     }
 }
 

@@ -37,6 +37,8 @@ struct LoginView: View {
             } else {
                 self.isSuccessful = true
                 self.user.isLogged = true
+                let fcmToken = UserDefaults.standard.value(forKey: "fcmToken") as? String ?? ""
+                Firestore.firestore().collection("users").document(Auth.auth().currentUser?.uid ?? "").setData(["fcmToken": fcmToken], merge: true)
                 UserDefaults.standard.set(true, forKey: "isLogged")
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

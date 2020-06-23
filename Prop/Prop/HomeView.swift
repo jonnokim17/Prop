@@ -12,7 +12,6 @@ import Firebase
 let screen = UIScreen.main.bounds
 
 struct HomeView: View {
-    @EnvironmentObject var user: UserStore
     @State var showAlert = false
     @ObservedObject var store = DataStore()
     @State var showPropCompose = false

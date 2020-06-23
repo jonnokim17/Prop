@@ -42,6 +42,7 @@
 		90215F3F249B2D3600082D45 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		90215F41249B309600082D45 /* UserStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStore.swift; sourceTree = "<group>"; };
 		90215F43249B33E900082D45 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		90298B3D24A1BD620091FE84 /* Prop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Prop.entitlements; sourceTree = "<group>"; };
 		906DDB63249D87BC00A687BD /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		90B5B519249AD7FC00342216 /* Prop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Prop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90B5B51C249AD7FC00342216 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 		90B5B51B249AD7FC00342216 /* Prop */ = {
 			isa = PBXGroup;
 			children = (
+				90298B3D24A1BD620091FE84 /* Prop.entitlements */,
 				90B5B51C249AD7FC00342216 /* AppDelegate.swift */,
 				90B5B51E249AD7FC00342216 /* SceneDelegate.swift */,
 				90B5B520249AD7FC00342216 /* ContentView.swift */,
@@ -437,6 +439,7 @@
 			baseConfigurationReference = DE8413250F7F8270DC39982B /* Pods-Prop.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Prop/Prop.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Prop/Preview Content\"";
 				DEVELOPMENT_TEAM = EP9GA36X8K;
@@ -458,6 +461,7 @@
 			baseConfigurationReference = 49B20A0A2E63E0EF67793A5D /* Pods-Prop.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Prop/Prop.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Prop/Preview Content\"";
 				DEVELOPMENT_TEAM = EP9GA36X8K;
