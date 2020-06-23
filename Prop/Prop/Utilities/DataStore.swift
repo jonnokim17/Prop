@@ -25,17 +25,21 @@ class DataStore: ObservableObject {
             } else {
                 if let snapshot = snapshot {
                     let documents = snapshot.documents.map { $0.data() }
-                    var sectionData = [Prop]()
+                    var propData = [Prop]()
 
                     for propDocument in documents {
-                        if let proposal = propDocument["proposal"] as? String, let opponent = propDocument["bettors"] as? [String], let uid = opponent.first {
-
-                            let section = Prop(proposal: proposal, opponent: uid, show: false)
-                            sectionData.append(section)
+                        if let proposal = propDocument["proposal"] as? String,
+                            let bettors = propDocument["bettors"] as? [String],
+                            let createdAt = propDocument["createdAt"] as? Timestamp,
+                            let endingAt = propDocument["endingAt"] as? Timestamp,
+                            let didAccept = propDocument["didAccept"] as? Bool
+                        {
+                            let section = Prop(proposal: proposal, opponent: bettors.first ?? "", createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), didAccept: didAccept, show: false, bettors: bettors)
+                            propData.append(section)
                         }
                     }
 
-                    self.props = sectionData
+                    self.props = propData
 
                 }
             }

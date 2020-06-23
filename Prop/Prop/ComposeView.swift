@@ -55,7 +55,7 @@ struct ComposeView: View {
                                 if let error = error {
                                     print(error.localizedDescription)
                                 } else {
-                                    let prop = Prop(proposal: self.message, opponent: self.selectedFriendUid, show: false)
+                                    let prop = Prop(proposal: self.message, opponent: self.selectedFriendUid, createdAt: Date(), endingAt: self.endDate, didAccept: false, show: false, bettors:  [self.selectedFriendUid,Auth.auth().currentUser?.uid ?? ""])
                                     self.store.addProp(prop: prop)
                                     self.presentationMode.wrappedValue.dismiss()
                                 }

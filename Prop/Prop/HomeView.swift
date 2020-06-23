@@ -97,6 +97,12 @@ struct PropView: View {
     var prop: Prop
     @State var opponentName = ""
 
+    var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return formatter
+    }
+
     var body: some View {
         ZStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 30.0) {
@@ -114,7 +120,7 @@ struct PropView: View {
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: 160)
-                Text(prop.opponent)
+                Text(dateFormatter.string(from: prop.createdAt))
                     .font(.system(.subheadline))
                     .foregroundColor(.white)
             }
@@ -156,7 +162,11 @@ struct Prop: Identifiable {
     var id = UUID()
     var proposal: String
     var opponent: String
+    var createdAt: Date
+    var endingAt: Date
+    var didAccept: Bool
     var show: Bool
+    var bettors: [String]
 }
 
 //    func addFireStoreDB() {
