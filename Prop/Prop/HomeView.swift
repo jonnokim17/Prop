@@ -57,14 +57,14 @@ struct HomeView: View {
                     .padding()
 
                     ForEach(store.props.indices, id: \.self) { index in
-                        GeometryReader { geomtry in
+                        GeometryReader { geometry in
                             PropView(
                                 show: self.$store.props[index].show,
                                 active: self.$active,
                                 index: index, activeIndex: self.$activeIndex,
                                 prop: self.store.props[index]
                             )
-                                .offset(y: self.store.props[index].show ? -geomtry.frame(in: .global).minY : 0)
+                                .offset(y: self.store.props[index].show ? -geometry.frame(in: .global).minY : 0)
                                 .opacity(self.activeIndex != index && self.active ? 0 : 1)
                                 .scaleEffect(self.activeIndex != index && self.active ? 0.5 : 1)
                                 .offset(x: self.activeIndex != index && self.active ? screen.width : 0)
@@ -108,10 +108,6 @@ struct PropView: View {
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
             .offset(y: show ? 460 : 0)
-//            .background(Color.white)
-//            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-//            .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 20)
-//            .opacity(show ? 1 : 0)
 
             VStack(spacing: 30) {
                 Text(prop.proposal)
