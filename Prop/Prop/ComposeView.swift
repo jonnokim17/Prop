@@ -22,6 +22,13 @@ struct ComposeView: View {
 
     @Environment(\.presentationMode) private var presentationMode
 
+    var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        return formatter
+    }
+    @State private var endDate = Date()
+
     var body: some View {
         VStack(spacing: 24) {
             Text("Enter your prop bet here")
@@ -29,52 +36,57 @@ struct ComposeView: View {
                 .padding()
             TextView(text: $message, textStyle: $textStyle)
                 .padding(.horizontal)
-                .frame(height: 240)
+                .frame(height: 180)
                 .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 20)
-            HStack {
-                Button(action: {
-                    self.showSearchView.toggle()
-                }) {
-                    Text(selectedFriend.isEmpty ? "Search Friends" : selectedFriend)
-                }
-                .sheet(isPresented: $showSearchView) {
-                    SearchView(selectedFriend: self.$selectedFriend, selectedFriendUid: self.$selectedFriendUid)
-                }
-                Spacer()
-                Button(action: {
-                    var acceptedAtDay = DateComponents()
-                    acceptedAtDay.day = 5
-                    let acceptedAtDate = Calendar.current.date(byAdding: acceptedAtDay, to: Date()) ?? Date()
-
-                    var endingAtDay = DateComponents()
-                    endingAtDay.day = 30
-                    let endingAtDate = Calendar.current.date(byAdding: endingAtDay, to: Date()) ?? Date()
-
-                    // passing dummy data
-                    self.db.collection("props").addDocument(data: [
-                    "createdAt": Date(),
-                    "acceptedAt": acceptedAtDate,
-                    "endingAt": endingAtDate,
-                    "proposal": self.message,
-                    "bettors": [
-                        self.selectedFriendUid,
-                        Auth.auth().currentUser?.uid ?? ""
-                        ]]) { (error) in
-                            if let error = error {
-                                print(error.localizedDescription)
-                            } else {
-                                let prop = Prop(proposal: self.message, opponent: self.selectedFriendUid, show: false)
-                                self.store.addProp(prop: prop)
-                                self.presentationMode.wrappedValue.dismiss()
-                            }
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        // passing dummy data
+                        self.db.collection("props").addDocument(data: [
+                        "createdAt": Date(),
+                        "didAccept": false,
+                        "endingAt": self.endDate,
+                        "proposal": self.message,
+                        "bettors": [
+                            self.selectedFriendUid,
+                            Auth.auth().currentUser?.uid ?? ""
+                            ]]) { (error) in
+                                if let error = error {
+                                    print(error.localizedDescription)
+                                } else {
+                                    let prop = Prop(proposal: self.message, opponent: self.selectedFriendUid, show: false)
+                                    self.store.addProp(prop: prop)
+                                    self.presentationMode.wrappedValue.dismiss()
+                                }
+                        }
+                    }) {
+                    Text("Prop!")
                     }
-                }) {
-                Text("Prop!")
+                    .disabled(self.selectedFriend.isEmpty || self.message.isEmpty ? true : false )
                 }
-                .disabled(self.selectedFriend.isEmpty ? true : false )
+                .padding(.horizontal, 30)
+                .padding(.vertical)
+
+                Form {
+                    HStack {
+                        Text("Select your friend:")
+                        Spacer()
+                        Button(action: {
+                            self.showSearchView.toggle()
+                        }) {
+                            Text(selectedFriend.isEmpty ? "Search Friends" : selectedFriend)
+                        }
+                        .sheet(isPresented: $showSearchView) {
+                            SearchView(selectedFriend: self.$selectedFriend, selectedFriendUid: self.$selectedFriendUid)
+                        }
+                    }
+                    DatePicker("End Date:", selection: $endDate, in: Date()...)
+                    .onAppear {
+                        self.hideKeyboard()
+                    }
+                }
             }
-            .padding(.horizontal, 30)
-            .padding(.vertical)
             Spacer()
         }
     }
