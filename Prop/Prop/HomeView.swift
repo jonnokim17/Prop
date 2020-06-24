@@ -92,6 +92,7 @@ struct PropView: View {
     @Binding var active: Bool
     var index: Int
     @Binding var activeIndex: Int
+    @State var activeView = CGSize.zero
 
     var prop: Prop
     @State var opponentName = ""
@@ -129,6 +130,23 @@ struct PropView: View {
             .background(Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
+            .gesture(
+                show ?
+                    DragGesture().onChanged { value in
+                        guard value.translation.height < 300  else { return }
+                        guard value.translation.height > 0  else { return }
+                        self.activeView = value.translation
+                    }
+                    .onEnded { _ in
+                        if self.activeView.height > 50  {
+                            self.show = false
+                            self.active = false
+                            self.activeIndex = -1
+                        }
+                        self.activeView = .zero
+                    }
+                    : nil
+            )
             .onTapGesture {
                 self.show.toggle()
                 self.active.toggle()
@@ -140,8 +158,27 @@ struct PropView: View {
             }
         }
         .frame(height: show ? screen.height : 280)
+        .scaleEffect(1 - self.activeView.height/1000)
+        .rotation3DEffect(Angle(degrees: Double(self.activeView.height/10)), axis: (x: 0, y: 10, z: 0))
         .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0))
-        .onAppear {
+        .gesture(
+            show ?
+                DragGesture().onChanged { value in
+                    guard value.translation.height < 300  else { return }
+                    guard value.translation.height > 0  else { return }
+                    self.activeView = value.translation
+                }
+                .onEnded { _ in
+                    if self.activeView.height > 50  {
+                        self.show = false
+                        self.active = false
+                        self.activeIndex = -1
+                    }
+                    self.activeView = .zero
+                }
+                : nil
+        )
+            .onAppear {
             self.getFriend(uid: self.prop.opponent) { (name) in
                 self.opponentName = name
             }
