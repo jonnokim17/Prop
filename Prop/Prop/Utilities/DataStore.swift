@@ -57,3 +57,13 @@ class DataStore: ObservableObject {
         }
     }
 }
+
+struct Prop: Identifiable {
+    var id: String
+    var proposal: String
+    var createdAt: Date
+    var endingAt: Date
+    var status: String
+    var show: Bool
+    var bettors: [String]
+}
