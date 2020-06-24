@@ -117,6 +117,13 @@ struct PropView: View {
 
             VStack(spacing: 30) {
                 HStack {
+                    HStack {
+                        Text(prop.didAccept ? "ACCEPTED" : "PENDING")
+                            .font(.system(size: 16, weight: .medium))
+                        Image(prop.didAccept ? "game" : "clock")
+                            .resizable()
+                            .frame(width: 36, height: 36)
+                    }
                     Spacer()
                     Image(systemName: "xmark")
                         .font(.system(size: 15, weight: .medium))
