@@ -36,13 +36,12 @@ struct ComposeView: View {
                 .padding()
             TextView(text: $message, textStyle: $textStyle)
                 .padding(.horizontal)
-                .frame(height: 180)
+                .frame(height: 100)
                 .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 20)
             VStack {
                 HStack {
                     Spacer()
                     Button(action: {
-                        // passing dummy data
                         self.db.collection("props").addDocument(data: [
                         "createdAt": Date(),
                         "didAccept": false,
@@ -61,9 +60,14 @@ struct ComposeView: View {
                                 }
                         }
                     }) {
-                    Text("Prop!")
+                    Text("PROP!")
                     }
+                    .padding(20)
+                    .background(Color.green.opacity(self.selectedFriend.isEmpty || self.message.isEmpty ? 0.3 : 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                     .disabled(self.selectedFriend.isEmpty || self.message.isEmpty ? true : false )
+                    
                 }
                 .padding(.horizontal, 30)
                 .padding(.vertical)
