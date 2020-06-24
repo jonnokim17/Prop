@@ -116,18 +116,31 @@ struct PropView: View {
             .offset(y: show ? 460 : 0)
 
             VStack(spacing: 30) {
+                HStack {
+                    Spacer()
+                    Image(systemName: "xmark")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(.white)
+                        .frame(width: 36, height: 36)
+                        .background(Color.black)
+                        .clipShape(Circle())
+                }
+                .opacity(show ? 1 : 0)
+                .offset(y: -60)
                 Text(prop.proposal)
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: 160)
+                    .offset(y: show ? 0 : -36)
                 Text(dateFormatter.string(from: prop.createdAt))
                     .font(.system(.subheadline))
                     .foregroundColor(.white)
+                    .offset(y: show ? 0 : -36)
             }
             .padding(show ? 30 : 20)
             .padding(.top, show ? 30 : 0)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 460 : 280)
-            .background(Color.blue)
+            .background(prop.didAccept ? Color.blue : Color.red)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
             .gesture(
