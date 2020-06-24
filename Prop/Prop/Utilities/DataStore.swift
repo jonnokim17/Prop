@@ -34,8 +34,8 @@ class DataStore: ObservableObject {
                             let endingAt = propDocument["endingAt"] as? Timestamp,
                             let didAccept = propDocument["didAccept"] as? Bool
                         {
-                            let section = Prop(proposal: proposal, opponent: bettors.first ?? "", createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), didAccept: didAccept, show: false, bettors: bettors)
-                            propData.append(section)
+                            let prop = Prop(proposal: proposal, createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), didAccept: didAccept, show: false, bettors: bettors)
+                            propData.append(prop)
                         }
                     }
 

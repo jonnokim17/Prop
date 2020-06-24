@@ -192,13 +192,13 @@ struct PropView: View {
                 : nil
         )
             .onAppear {
-            self.getFriend(uid: self.prop.opponent) { (name) in
+                self.getFriend(uid: self.prop.bettors.filter { $0 != Auth.auth().currentUser?.uid }.first) { (name) in
                 self.opponentName = name
             }
         }
     }
 
-    func getFriend(uid: String, completion: @escaping(String) -> ()) {
+    func getFriend(uid: String?, completion: @escaping(String) -> ()) {
         Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
             if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String {
                 completion(userFirstName)
@@ -210,7 +210,6 @@ struct PropView: View {
 struct Prop: Identifiable {
     var id = UUID()
     var proposal: String
-    var opponent: String
     var createdAt: Date
     var endingAt: Date
     var didAccept: Bool
