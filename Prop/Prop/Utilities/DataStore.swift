@@ -32,9 +32,10 @@ class DataStore: ObservableObject {
                             let bettors = propDocument["bettors"] as? [String],
                             let createdAt = propDocument["createdAt"] as? Timestamp,
                             let endingAt = propDocument["endingAt"] as? Timestamp,
-                            let didAccept = propDocument["didAccept"] as? Bool
+                            let status = propDocument["status"] as? String,
+                            let id = propDocument["id"] as? String
                         {
-                            let prop = Prop(proposal: proposal, createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), didAccept: didAccept, show: false, bettors: bettors)
+                            let prop = Prop(id: id, proposal: proposal, createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), status: status, show: false, bettors: bettors)
                             propData.append(prop)
                         }
                     }
@@ -48,5 +49,11 @@ class DataStore: ObservableObject {
 
     func addProp(prop: Prop) {
         props.append(prop)
+    }
+
+    func updateProp(prop: Prop) {
+        if let row = props.firstIndex(where: {$0.id == prop.id}) {
+            props[row] = prop
+        }
     }
 }

@@ -58,6 +58,7 @@ struct HomeView: View {
                     ForEach(store.props.indices, id: \.self) { index in
                         GeometryReader { geometry in
                             PropView(
+                                store: self.store,
                                 show: self.$store.props[index].show,
                                 active: self.$active,
                                 index: index, activeIndex: self.$activeIndex,
@@ -88,6 +89,7 @@ struct HomeView_Previews: PreviewProvider {
 }
 
 struct PropView: View {
+    @ObservedObject var store: DataStore
     @Binding var show: Bool
     @Binding var active: Bool
     var index: Int
@@ -105,11 +107,74 @@ struct PropView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 30.0) {
-                Text("Prop Info")
-                    .font(.title).bold()
-                Text("Proposal: \(prop.proposal)")
-                Text("Opponent: \(opponentName)")
+            VStack {
+                HStack {
+                    HStack {
+                        Button(action: {
+                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
+                                if let document = snapshot?.documents.first {
+                                    document.reference.setData(["status": "accepted"], merge: true)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
+                                    self.store.updateProp(prop: updatedProp)
+                                    self.show = false
+                                    self.active = false
+                                    self.activeIndex = -1
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text("ACCEPT")
+                                    .font(.system(size: 18))
+                            }
+                            .frame(minWidth: 0, maxWidth: 120)
+                            .padding()
+                            .foregroundColor(.white)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .stroke(Color.white, lineWidth: 2))
+                                .background(Color.green.cornerRadius(40))
+
+                        }
+                    }
+
+                    Spacer()
+
+                    HStack {
+                        Button(action: {
+                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
+                                if let document = snapshot?.documents.first {
+                                    document.reference.setData(["status": "rejected"], merge: true)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
+                                    self.store.updateProp(prop: updatedProp)
+                                    self.show = false
+                                    self.active = false
+                                    self.activeIndex = -1
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text("REJECT")
+                                    .font(.system(size: 18))
+                            }
+                            .frame(minWidth: 0, maxWidth: 120)
+                            .padding()
+                            .foregroundColor(.white)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .stroke(Color.white, lineWidth: 2))
+                                .background(Color.red.cornerRadius(40))
+                        }
+                    }
+                }
+                .padding(.bottom, 30)
+                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" ? 1 : 0)
+
+                VStack(alignment: .leading, spacing: 30.0) {
+                    Text("Prop Info")
+                        .font(.title).bold()
+                    Text("Proposal: \(prop.proposal)")
+                    Text("Opponent: \(opponentName)")
+                }
             }
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
@@ -118,9 +183,9 @@ struct PropView: View {
             VStack(spacing: 30) {
                 HStack {
                     HStack {
-                        Text(prop.didAccept ? "ACCEPTED" : "PENDING")
+                        Text(prop.status.uppercased())
                             .font(.system(size: 16, weight: .medium))
-                        Image(prop.didAccept ? "game" : "clock")
+                        Image(prop.status)
                             .resizable()
                             .frame(width: 36, height: 36)
                     }
@@ -147,7 +212,7 @@ struct PropView: View {
             .padding(show ? 30 : 20)
             .padding(.top, show ? 30 : 0)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 460 : 280)
-            .background(prop.didAccept ? Color.blue : Color.red)
+            .background(Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
             .gesture(
@@ -215,11 +280,11 @@ struct PropView: View {
 }
 
 struct Prop: Identifiable {
-    var id = UUID()
+    var id: String
     var proposal: String
     var createdAt: Date
     var endingAt: Date
-    var didAccept: Bool
+    var status: String
     var show: Bool
     var bettors: [String]
 }

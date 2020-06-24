@@ -45,19 +45,21 @@ struct ComposeView: View {
                 HStack {
                     Spacer()
                     Button(action: {
+                        let id = UUID().uuidString
                         self.db.collection("props").addDocument(data: [
-                        "createdAt": Date(),
-                        "didAccept": false,
-                        "endingAt": self.endDate,
-                        "proposal": self.message,
-                        "bettors": [
-                            self.selectedFriendUid,
-                            Auth.auth().currentUser?.uid ?? ""
+                            "id": id,
+                            "createdAt": Date(),
+                            "status": "pending",
+                            "endingAt": self.endDate,
+                            "proposal": self.message,
+                            "bettors": [
+                                self.selectedFriendUid,
+                                Auth.auth().currentUser?.uid ?? ""
                             ]]) { (error) in
                                 if let error = error {
                                     print(error.localizedDescription)
                                 } else {
-                                    let prop = Prop(proposal: self.message, createdAt: Date(), endingAt: self.endDate, didAccept: false, show: false, bettors:  [self.selectedFriendUid,Auth.auth().currentUser?.uid ?? ""])
+                                    let prop = Prop(id: id, proposal: self.message, createdAt: Date(), endingAt: self.endDate, status: "pending", show: false, bettors:  [self.selectedFriendUid,Auth.auth().currentUser?.uid ?? ""])
                                     self.getFCMToken(uid: self.selectedFriendUid) { (fcmToken) in
                                         self.sendMessageToUser(to: fcmToken, title: "New Prop Received!", body: self.message)
                                         self.store.addProp(prop: prop)
