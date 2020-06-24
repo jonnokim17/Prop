@@ -39,8 +39,8 @@ class DataStore: ObservableObject {
                         }
                     }
 
+                    propData.sort { $0.createdAt > $1.createdAt }
                     self.props = propData
-
                 }
             }
         }
