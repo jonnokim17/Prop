@@ -22,7 +22,6 @@ struct SignupView: View {
 
     private func signUp() {
         self.isLoading = true
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
             if let error = error {
                 self.error = error.localizedDescription
@@ -39,6 +38,7 @@ struct SignupView: View {
                         self.error = error.localizedDescription
                     } else {
                         UserDefaults.standard.set(true, forKey: "isLogged")
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             self.presentationMode.wrappedValue.dismiss()
                             self.username = ""

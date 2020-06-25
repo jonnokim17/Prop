@@ -12,12 +12,14 @@ import Firebase
 
 class DataStore: ObservableObject {
     @Published var props: [Prop] = []
+    @Published var isLoading = true
 
     init() {
         getProps()
     }
 
     func getProps() {
+        self.isLoading = true
         let currentUserId = Auth.auth().currentUser?.uid ?? ""
         Firestore.firestore().collection("props").whereField("bettors", arrayContains: currentUserId).getDocuments { (snapshot, error) in
             if let error = error {
@@ -42,6 +44,7 @@ class DataStore: ObservableObject {
 
                     propData.sort { $0.endingAt < $1.endingAt }
                     self.props = propData
+                    self.isLoading = false
                 }
             }
         }

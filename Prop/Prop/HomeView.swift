@@ -49,29 +49,36 @@ struct HomeView: View {
                                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
                                 .blur(radius: active ? 20 : 0)
                         }
+                        .animation(nil)
                         .sheet(isPresented: $showPropCompose) {
                             ComposeView(store: self.store)
                         }
                     }
                     .padding()
 
-                    ForEach(store.props.indices, id: \.self) { index in
-                        GeometryReader { geometry in
-                            PropView(
-                                store: self.store,
-                                show: self.$store.props[index].show,
-                                active: self.$active,
-                                index: index, activeIndex: self.$activeIndex,
-                                prop: self.store.props[index]
-                            )
-                                .offset(y: self.store.props[index].show ? -geometry.frame(in: .global).minY : 0)
-                                .opacity(self.activeIndex != index && self.active ? 0 : 1)
-                                .scaleEffect(self.activeIndex != index && self.active ? 0.5 : 1)
-                                .offset(x: self.activeIndex != index && self.active ? screen.width : 0)
+                    if !store.isLoading && store.props.isEmpty {
+                        Text("No Prop Available")
+                            .offset(y: screen.height/2 - 200)
+                            .animation(nil)
+                    } else {
+                        ForEach(store.props.indices, id: \.self) { index in
+                            GeometryReader { geometry in
+                                PropView(
+                                    store: self.store,
+                                    show: self.$store.props[index].show,
+                                    active: self.$active,
+                                    index: index, activeIndex: self.$activeIndex,
+                                    prop: self.store.props[index]
+                                )
+                                    .offset(y: self.store.props[index].show ? -geometry.frame(in: .global).minY : 0)
+                                    .opacity(self.activeIndex != index && self.active ? 0 : 1)
+                                    .scaleEffect(self.activeIndex != index && self.active ? 0.5 : 1)
+                                    .offset(x: self.activeIndex != index && self.active ? screen.width : 0)
+                            }
+                            .frame(height: 280)
+                            .frame(maxWidth: self.store.props[index].show ? .infinity : screen.width - 60)
+                            .zIndex(self.store.props[index].show ? 1 : 0)
                         }
-                        .frame(height: 280)
-                        .frame(maxWidth: self.store.props[index].show ? .infinity : screen.width - 60)
-                        .zIndex(self.store.props[index].show ? 1 : 0)
                     }
                 }
                 .frame(maxWidth: screen.width)
