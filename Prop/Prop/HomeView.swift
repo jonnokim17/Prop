@@ -173,13 +173,15 @@ struct PropView: View {
                     }
                 }
                 .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
-
+                
                 VStack(alignment: .leading, spacing: 30.0) {
                     Text("Prop Info")
                         .font(.title).bold()
                     Text(prop.proposal)
                 }
                 .animation(nil)
+                .opacity(show ? 1 : 0)
+                .offset(y: -100)
             }
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
@@ -217,7 +219,7 @@ struct PropView: View {
             }
             .padding(show ? 30 : 20)
             .padding(.top, show ? 30 : 0)
-            .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 460 : 280)
+            .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 400 : 280)
             .background(prop.endingAt < Date() ? Color.red : Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .shadow(color: prop.endingAt < Date() ? Color.red.opacity(0.3) : Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
