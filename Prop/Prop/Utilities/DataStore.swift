@@ -9,7 +9,6 @@
 import SwiftUI
 import Combine
 import Firebase
-import UserNotificationsUI
 
 class DataStore: ObservableObject {
     @Published var props: [Prop] = []

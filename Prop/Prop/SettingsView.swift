@@ -45,6 +45,7 @@ struct SettingsView: View {
                                 do {
                                     try Auth.auth().signOut()
                                     UserDefaults.standard.set(false, forKey: "isLogged")
+                                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
                                     self.user.isLogged = false
                                 } catch let err {
                                     print(err)
