@@ -121,66 +121,6 @@ struct PropView: View {
     var body: some View {
         ZStack(alignment: .top) {
             VStack {
-                HStack {
-                    HStack {
-                        Button(action: {
-                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
-                                if let document = snapshot?.documents.first {
-                                    document.reference.setData(["status": "accepted"], merge: true)
-                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
-                                    self.store.updateProp(prop: updatedProp)
-                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
-                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Accepted!", body: "Good luck! 🤘🤘🤘")
-                                    }
-                                }
-                            }
-                        }) {
-                            HStack {
-                                Text("ACCEPT")
-                                    .font(.system(size: 18))
-                            }
-                            .frame(minWidth: 0, maxWidth: 120)
-                            .padding()
-                            .foregroundColor(.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(Color.white, lineWidth: 2))
-                                .background(Color.green.cornerRadius(40))
-
-                        }
-                    }
-
-                    Spacer()
-
-                    HStack {
-                        Button(action: {
-                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
-                                if let document = snapshot?.documents.first {
-                                    document.reference.setData(["status": "rejected"], merge: true)
-                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
-                                    self.store.updateProp(prop: updatedProp)
-                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
-                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Rejected", body: "😞😞😞")
-                                    }
-                                }
-                            }
-                        }) {
-                            HStack {
-                                Text("REJECT")
-                                    .font(.system(size: 18))
-                            }
-                            .frame(minWidth: 0, maxWidth: 120)
-                            .padding()
-                            .foregroundColor(.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(Color.white, lineWidth: 2))
-                                .background(Color.red.cornerRadius(40))
-                        }
-                    }
-                }
-                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
-
                 VStack(alignment: .leading, spacing: 30.0) {
                     Text("Prop Info")
                         .font(.title).bold()
@@ -192,7 +132,7 @@ struct PropView: View {
             }
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
-            .offset(y: show ? 460 : 0)
+            .offset(y: show ? 500 : 0)
 
             VStack(spacing: 30) {
                 HStack {
@@ -213,21 +153,83 @@ struct PropView: View {
                 }
                 .opacity(show ? 1 : 0)
                 .offset(y: -60)
-                Text(show ? opponentName : prop.proposal)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(width: screen.width - (show ? 80 : 110))
-                    .offset(y: show ? 0 : -36)
-                    .animation(nil)
-                Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
-                    .font(.system(.subheadline))
-                    .foregroundColor(.white)
-                    .offset(y: show ? 0 : -36)
+
+                VStack(spacing: 20) {
+                    Text(show ? opponentName : prop.proposal)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: screen.width - (show ? 80 : 110))
+                        .offset(y: show ? 0 : -36)
+                        .animation(nil)
+                    Text(prop.endingAt < Date() ? "ENDED" : prop.status == "rejected" ? "REJECTED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
+                        .font(.system(.subheadline))
+                        .foregroundColor(.white)
+                        .offset(y: show ? 0 : -36)
+                }
+                .offset(y: prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 0 : 30)
+
+                HStack {
+                    HStack {
+                        Button(action: {
+                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
+                                if let document = snapshot?.documents.first {
+                                    document.reference.setData(["status": "accepted"], merge: true)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
+                                    self.store.updateProp(prop: updatedProp)
+                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Accepted!", body: "Good luck! 🤘🤘🤘")
+                                    }
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text("ACCEPT")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18))
+                            }
+                            .padding(12)
+                            .padding(.horizontal, 30)
+                            .background(Color.green)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            .shadow(color: Color.green.opacity(0.3), radius: 20, x: 0, y: 20)
+                        }
+                    }
+
+                    Spacer()
+
+                    HStack {
+                        Button(action: {
+                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
+                                if let document = snapshot?.documents.first {
+                                    document.reference.setData(["status": "rejected"], merge: true)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
+                                    self.store.updateProp(prop: updatedProp)
+                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Rejected", body: "😞😞😞")
+                                    }
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text("REJECT")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18))
+                            }
+                            .padding(12)
+                            .padding(.horizontal, 30)
+                            .background(Color.red)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            .shadow(color: Color.red.opacity(0.3), radius: 20, x: 0, y: 20)
+                        }
+                    }
+                }
+                .padding(.top, show ? 12 : 0)
+                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
             }
             .padding(show ? 30 : 20)
             .padding(.top, show ? 30 : 0)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 400 : 280)
-            .background(prop.endingAt < Date() ? Color.red : Color.blue)
+            .background(prop.endingAt < Date() || prop.status == "rejected" ? Color.red : Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .shadow(color: prop.endingAt < Date() ? Color.red.opacity(0.3) : Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
             .gesture(
