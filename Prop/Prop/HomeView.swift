@@ -208,9 +208,10 @@ struct PropView: View {
                 Text(prop.proposal)
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
-                    .frame(width: 160)
+                    .frame(width: screen.width - (show ? 80 : 110))
+                    .frame(maxHeight: 164)
                     .offset(y: show ? 0 : -36)
-                Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + "at " + dateFormatter2.string(from: prop.endingAt))
+                Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
                     .font(.system(.subheadline))
                     .foregroundColor(.white)
                     .offset(y: show ? 0 : -36)
@@ -224,8 +225,8 @@ struct PropView: View {
             .gesture(
                 show ?
                     DragGesture().onChanged { value in
-                        guard value.translation.height < 300  else { return }
-                        guard value.translation.height > 0  else { return }
+                        guard value.translation.height < 300 else { return }
+                        guard value.translation.height > 0 else { return }
                         self.activeView = value.translation
                     }
                     .onEnded { _ in
