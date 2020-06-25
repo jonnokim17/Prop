@@ -272,87 +272,9 @@ struct PropView: View {
 
     func getFriend(uid: String?, completion: @escaping(String) -> ()) {
         Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-            if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String {
-                completion(userFirstName)
+            if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String {
+                completion(username)
             }
         }
     }
 }
-
-//    func addFireStoreDB() {
-//        let db = Firestore.firestore()
-//
-//        /// Add new document
-//        db.collection("airline").addDocument(data: ["year": 1990, "type": "Avianca", "origin": "Colombia"])
-//
-//        /// Getting document ID
-//        let newDocument = db.collection("airline").document()
-//        newDocument.setData(["year": 1990, "type": "LATAM", "origin": "Panama", "id": newDocument.documentID])
-//
-//        /// Add a document with a specific ID
-//        db.collection("airline").document("asian_airlines").setData(["year": 1987, "type": "Singapore Air", "origin": "Korea", "test": "test"])
-//
-//        /// Using completion handler
-//        db.collection("airline").addDocument(data: ["asdf": "asdf"]) { (error) in
-//            if let error = error {
-//                print("there was an error.")
-//            } else {
-//                // error is nil, operation successful
-//            }
-//        }
-//
-//        /// delete a document
-//        db.collection("airline").document("IvpxFuG0F4hvmKHZREhG").delete()
-//
-//        /// delete a single field
-//        db.collection("airline").document("asian_airlines").updateData(["test": FieldValue.delete()])
-//
-//        /// detect error, use completion handler
-//        db.collection("airline").document("IvpxFuG0F4hvmKHZREhG").delete { (error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                // successful
-//            }
-//        }
-//
-//        /// read a specific document
-//        db.collection("airline").document("asian_airlines").getDocument { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                if let snapshot = snapshot, snapshot.exists {
-//                    guard let documentData = snapshot.data() else {
-//                        return
-//                    }
-//                    print(documentData)
-//                }
-//            }
-//        }
-//
-//        /// get all documents
-//        db.collection("airline").getDocuments { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                if let snapshot = snapshot {
-//                    for document in snapshot.documents {
-//                        print(document.data())
-//                    }
-//                }
-//            }
-//        }
-//
-//        /// get subset of documents
-//        db.collection("airline").whereField("year", isEqualTo: 1987).getDocuments { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                if let snapshot = snapshot {
-//                    for document in snapshot.documents {
-//                        print(document.data())
-//                    }
-//                }
-//            }
-//        }
-//    }
