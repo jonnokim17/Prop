@@ -114,7 +114,7 @@ struct PropView: View {
 
     var dateFormatter2: DateFormatter {
         let formatter = DateFormatter()
-        formatter.timeStyle = .medium
+        formatter.timeStyle = .short
         return formatter
     }
 

@@ -9,6 +9,7 @@
 import SwiftUI
 import Combine
 import Firebase
+import UserNotificationsUI
 
 class DataStore: ObservableObject {
     @Published var props: [Prop] = []
@@ -28,6 +29,7 @@ class DataStore: ObservableObject {
                 if let snapshot = snapshot {
                     let documents = snapshot.documents.map { $0.data() }
                     var propData = [Prop]()
+                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
 
                     for propDocument in documents {
                         if let proposal = propDocument["proposal"] as? String,
@@ -38,6 +40,7 @@ class DataStore: ObservableObject {
                             let id = propDocument["id"] as? String
                         {
                             let prop = Prop(id: id, proposal: proposal, createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), status: status, show: false, bettors: bettors)
+                            self.addLocationNotification(prop: prop)
                             propData.append(prop)
                         }
                     }
@@ -51,6 +54,7 @@ class DataStore: ObservableObject {
     }
 
     func addProp(prop: Prop) {
+        addLocationNotification(prop: prop)
         props.append(prop)
     }
 
@@ -58,6 +62,16 @@ class DataStore: ObservableObject {
         if let row = props.firstIndex(where: {$0.id == prop.id}) {
             props[row] = prop
         }
+    }
+
+    private func addLocationNotification(prop: Prop) {
+        let content = UNMutableNotificationContent()
+        content.title = "Prop has ended!"
+        content.subtitle = prop.proposal
+        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: prop.endingAt)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        let request = UNNotificationRequest(identifier: prop.id, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
     }
 
     static func getFCMToken(uid: String, completion: @escaping(String) -> ()) {
