@@ -101,7 +101,13 @@ struct PropView: View {
 
     var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateStyle = .medium
+        return formatter
+    }
+
+    var dateFormatter2: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .medium
         return formatter
     }
 
@@ -167,7 +173,7 @@ struct PropView: View {
                     }
                 }
                 .padding(.bottom, 30)
-                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" ? 1 : 0)
+                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
 
                 VStack(alignment: .leading, spacing: 30.0) {
                     Text("Prop Info")
@@ -204,7 +210,7 @@ struct PropView: View {
                     .foregroundColor(.white)
                     .frame(width: 160)
                     .offset(y: show ? 0 : -36)
-                Text(dateFormatter.string(from: prop.createdAt))
+                Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + "at " + dateFormatter2.string(from: prop.endingAt))
                     .font(.system(.subheadline))
                     .foregroundColor(.white)
                     .offset(y: show ? 0 : -36)
@@ -212,9 +218,9 @@ struct PropView: View {
             .padding(show ? 30 : 20)
             .padding(.top, show ? 30 : 0)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 460 : 280)
-            .background(Color.blue)
+            .background(prop.endingAt < Date() ? Color.red : Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-            .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
+            .shadow(color: prop.endingAt < Date() ? Color.red.opacity(0.3) : Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
             .gesture(
                 show ?
                     DragGesture().onChanged { value in

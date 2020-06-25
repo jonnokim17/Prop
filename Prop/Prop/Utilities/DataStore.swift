@@ -40,7 +40,7 @@ class DataStore: ObservableObject {
                         }
                     }
 
-                    propData.sort { $0.createdAt > $1.createdAt }
+                    propData.sort { $0.endingAt < $1.endingAt }
                     self.props = propData
                 }
             }
