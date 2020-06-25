@@ -42,30 +42,43 @@ struct SearchView: View {
             }
         }
         .onAppear {
-            self.getAllFriends()
+            self.getAllUsers()
         }
     }
 
-    func getAllFriends() {
-        Firestore.firestore().collection("users").whereField("uid", isEqualTo: Auth.auth().currentUser?.uid ?? "").getDocuments { (snapshot, error) in
-            if let document = snapshot?.documents.map({ $0.data() }).first {
-                if let friendsUidArray = document["friends"] as? [String] {
-                    self.getFriends(uids: friendsUidArray)
+    func getAllUsers() {
+        Firestore.firestore().collection("users").getDocuments { (snapshot, error) in
+            if let documents = snapshot?.documents.map({ $0.data() }) {
+                for document in documents where document["uid"] as? String != Auth.auth().currentUser?.uid {
+                    if let username = document["username"] as? String, let uid = document["uid"] as? String {
+                        let dictToAdd = ["username": username, "uid": uid]
+                        self.friendsArray.append(dictToAdd)
+                    }
                 }
             }
         }
     }
 
-    func getFriends(uids: [String]) {
-        for uid in uids {
-            Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-                if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String, let uid = document["uid"] as? String {
-                    let dictToAdd = ["username": username, "uid": uid]
-                    self.friendsArray.append(dictToAdd)
-                }
-            }
-        }
-    }
+//    func getAllFriends() {
+//        Firestore.firestore().collection("users").whereField("uid", isEqualTo: Auth.auth().currentUser?.uid ?? "").getDocuments { (snapshot, error) in
+//            if let document = snapshot?.documents.map({ $0.data() }).first {
+//                if let friendsUidArray = document["friends"] as? [String] {
+//                    self.getFriends(uids: friendsUidArray)
+//                }
+//            }
+//        }
+//    }
+//
+//    func getFriends(uids: [String]) {
+//        for uid in uids {
+//            Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
+//                if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String, let uid = document["uid"] as? String {
+//                    let dictToAdd = ["username": username, "uid": uid]
+//                    self.friendsArray.append(dictToAdd)
+//                }
+//            }
+//        }
+//    }
 }
 
 struct SearchView_Previews: PreviewProvider {
