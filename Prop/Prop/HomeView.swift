@@ -116,9 +116,9 @@ struct PropView: View {
                                     document.reference.setData(["status": "accepted"], merge: true)
                                     let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
                                     self.store.updateProp(prop: updatedProp)
-                                    self.show = false
-                                    self.active = false
-                                    self.activeIndex = -1
+                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Accepted!", body: "Good luck! 🤘🤘🤘")
+                                    }
                                 }
                             }
                         }) {
@@ -146,9 +146,9 @@ struct PropView: View {
                                     document.reference.setData(["status": "rejected"], merge: true)
                                     let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
                                     self.store.updateProp(prop: updatedProp)
-                                    self.show = false
-                                    self.active = false
-                                    self.activeIndex = -1
+                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Rejected", body: "😞😞😞")
+                                    }
                                 }
                             }
                         }) {

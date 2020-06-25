@@ -60,8 +60,8 @@ struct ComposeView: View {
                                     print(error.localizedDescription)
                                 } else {
                                     let prop = Prop(id: id, proposal: self.message, createdAt: Date(), endingAt: self.endDate, status: "pending", show: false, bettors:  [self.selectedFriendUid,Auth.auth().currentUser?.uid ?? ""])
-                                    self.getFCMToken(uid: self.selectedFriendUid) { (fcmToken) in
-                                        self.sendMessageToUser(to: fcmToken, title: "New Prop Received!", body: self.message)
+                                    DataStore.getFCMToken(uid: self.selectedFriendUid) { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "New Prop Received! 🚀🚀🚀", body: self.message)
                                         self.store.addProp(prop: prop)
                                         self.presentationMode.wrappedValue.dismiss()
                                     }
@@ -101,40 +101,6 @@ struct ComposeView: View {
             }
             Spacer()
         }
-    }
-
-    func getFCMToken(uid: String, completion: @escaping(String) -> ()) {
-        Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-            if let document = snapshot?.documents.map({ $0.data() }).first, let fcmToken = document["fcmToken"] as? String {
-                completion(fcmToken)
-            }
-        }
-    }
-
-    func sendMessageToUser(to token: String, title: String, body: String) {
-        let urlString = "https://fcm.googleapis.com/fcm/send"
-        guard let url = NSURL(string: urlString) else { return }
-        let paramString: [String : Any] = ["to" : token,
-                                           "notification" : ["title" : title, "body" : body],
-                                           "data" : ["user" : "test_id"]
-        ]
-        let request = NSMutableURLRequest(url: url as URL)
-        request.httpMethod = "POST"
-        request.httpBody = try? JSONSerialization.data(withJSONObject:paramString, options: [.prettyPrinted])
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("key=\(ServerKey)", forHTTPHeaderField: "Authorization")
-        let task =  URLSession.shared.dataTask(with: request as URLRequest)  { (data, response, error) in
-            do {
-                if let jsonData = data {
-                    if let jsonDataDict  = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: AnyObject] {
-                        print("Received data:\n\(jsonDataDict))")
-                    }
-                }
-            } catch let err as NSError {
-                print(err.debugDescription)
-            }
-        }
-        task.resume()
     }
 
     private func hideKeyboard() {
