@@ -179,6 +179,7 @@ struct PropView: View {
                         .font(.title).bold()
                     Text(prop.proposal)
                 }
+                .animation(nil)
             }
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
@@ -208,6 +209,7 @@ struct PropView: View {
                     .foregroundColor(.white)
                     .frame(width: screen.width - (show ? 80 : 110))
                     .offset(y: show ? 0 : -36)
+                    .animation(nil)
                 Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
                     .font(.system(.subheadline))
                     .foregroundColor(.white)
