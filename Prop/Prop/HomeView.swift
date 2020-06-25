@@ -172,14 +172,12 @@ struct PropView: View {
                         }
                     }
                 }
-                .padding(.bottom, 30)
                 .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
 
                 VStack(alignment: .leading, spacing: 30.0) {
                     Text("Prop Info")
                         .font(.title).bold()
-                    Text("Proposal: \(prop.proposal)")
-                    Text("Opponent: \(opponentName)")
+                    Text(prop.proposal)
                 }
             }
             .padding(30)
@@ -205,11 +203,10 @@ struct PropView: View {
                 }
                 .opacity(show ? 1 : 0)
                 .offset(y: -60)
-                Text(prop.proposal)
+                Text(show ? opponentName : prop.proposal)
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: screen.width - (show ? 80 : 110))
-                    .frame(maxHeight: 164)
                     .offset(y: show ? 0 : -36)
                 Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
                     .font(.system(.subheadline))
