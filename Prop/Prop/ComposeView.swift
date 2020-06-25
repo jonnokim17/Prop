@@ -43,7 +43,6 @@ struct ComposeView: View {
                 .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 20)
             VStack {
                 HStack {
-                    Spacer()
                     Button(action: {
                         let id = UUID().uuidString
                         self.db.collection("props").addDocument(data: [
@@ -68,9 +67,12 @@ struct ComposeView: View {
                                 }
                         }
                     }) {
-                    Text("PROP!")
+                    Text("PROP")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(Color.white.opacity(self.selectedFriend.isEmpty || self.message.isEmpty ? 0.3 : 1))
                     }
-                    .padding(20)
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 60)
                     .background(Color.green.opacity(self.selectedFriend.isEmpty || self.message.isEmpty ? 0.3 : 1))
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
