@@ -173,7 +173,7 @@ struct PropView: View {
                     }
                 }
                 .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
-                
+
                 VStack(alignment: .leading, spacing: 30.0) {
                     Text("Prop Info")
                         .font(.title).bold()
