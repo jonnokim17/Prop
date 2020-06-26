@@ -17,7 +17,7 @@ struct ContentView: View {
                 .opacity(user.isLogged ? 0 : 1)
             TabView {
                 HomeView().tabItem({
-                    Image(systemName: "person.fill")
+                    Image(systemName: "house.fill")
                     Text("Home")
                 }).tag(0)
                 SettingsView().tabItem({

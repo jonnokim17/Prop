@@ -18,15 +18,20 @@ struct HomeView: View {
     @State var show = false
     @State var active = false
     @State var activeIndex = -1
+    @State private var showingActionSheet = false
+    @State private var propStatus: PropStatus = .all
 
     let db = Firestore.firestore()
 
+    enum PropStatus: String {
+        case accepted
+        case rejected
+        case pending
+        case all
+    }
+
     var body: some View {
         ZStack {
-            Color.black.opacity(active ? 0.5 : 0)
-                .animation(.linear)
-                .edgesIgnoringSafeArea(.all)
-
             ScrollView {
                 VStack(spacing: 24) {
                     HStack {
@@ -35,7 +40,7 @@ struct HomeView: View {
                             .frame(width: 100)
                             .padding(.leading, 24)
                             .blur(radius: active ? 20 : 0)
-                            Spacer()
+                        Spacer()
                         Button(action: {
                             self.showPropCompose.toggle()
                         }) {
@@ -49,29 +54,69 @@ struct HomeView: View {
                                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
                                 .blur(radius: active ? 20 : 0)
                         }
+                        .animation(nil)
                         .sheet(isPresented: $showPropCompose) {
                             ComposeView(store: self.store)
+                        }
+                        .padding(8)
+
+                        Button(action: {
+                            self.showingActionSheet.toggle()
+                        }) {
+                            Image(systemName: "line.horizontal.3.decrease.circle")
+                                .renderingMode(.original)
+                                .font(.system(size: 18, weight: .medium))
+                                .frame(width: 44, height: 44)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+                                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
+                                .blur(radius: active ? 20 : 0)
+                        }
+                        .animation(nil)
+                        .actionSheet(isPresented: $showingActionSheet) { () -> ActionSheet in
+                            ActionSheet(title: Text("Filter Props By"), message: nil, buttons: [
+                                .default(Text("Accepted"), action: {
+                                    self.propStatus = .accepted
+                                }),
+                                .default(Text("Rejected"), action: {
+                                    self.propStatus = .rejected
+                                }),
+                                .default(Text("Pending"), action: {
+                                    self.propStatus = .pending
+                                }),
+                                .default(Text("Show All"), action: {
+                                    self.propStatus = .all
+                                }),
+                                .cancel()
+                            ])
                         }
                     }
                     .padding()
 
-                    ForEach(store.props.indices, id: \.self) { index in
-                        GeometryReader { geometry in
-                            PropView(
-                                store: self.store,
-                                show: self.$store.props[index].show,
-                                active: self.$active,
-                                index: index, activeIndex: self.$activeIndex,
-                                prop: self.store.props[index]
-                            )
-                                .offset(y: self.store.props[index].show ? -geometry.frame(in: .global).minY : 0)
-                                .opacity(self.activeIndex != index && self.active ? 0 : 1)
-                                .scaleEffect(self.activeIndex != index && self.active ? 0.5 : 1)
-                                .offset(x: self.activeIndex != index && self.active ? screen.width : 0)
+                    if !store.isLoading && store.props.isEmpty {
+                        Text("No Prop Available")
+                            .offset(y: screen.height/2 - 200)
+                            .animation(nil)
+                    } else {
+                        ForEach(store.props.filter { return propStatus == .all ? true : $0.status == propStatus.rawValue }.indices, id: \.self) { index in
+                            GeometryReader { geometry in
+                                PropView(
+                                    store: self.store,
+                                    show: self.$store.props[index].show,
+                                    active: self.$active,
+                                    index: index, activeIndex: self.$activeIndex,
+                                    prop: self.store.props.filter { return self.propStatus == .all ? true : $0.status == self.propStatus.rawValue }[index]
+                                )
+                                    .offset(y: self.store.props[index].show ? -geometry.frame(in: .global).minY : 0)
+                                    .opacity(self.activeIndex != index && self.active ? 0 : 1)
+                                    .scaleEffect(self.activeIndex != index && self.active ? 0.5 : 1)
+                                    .offset(x: self.activeIndex != index && self.active ? screen.width : 0)
+                            }
+                            .frame(height: 280)
+                            .frame(maxWidth: self.store.props[index].show ? .infinity : screen.width - 60)
+                            .zIndex(self.store.props[index].show ? 1 : 0)
                         }
-                        .frame(height: 280)
-                        .frame(maxWidth: self.store.props[index].show ? .infinity : screen.width - 60)
-                        .zIndex(self.store.props[index].show ? 1 : 0)
                     }
                 }
                 .frame(maxWidth: screen.width)
@@ -101,84 +146,31 @@ struct PropView: View {
 
     var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateStyle = .medium
+        return formatter
+    }
+
+    var dateFormatter2: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
         return formatter
     }
 
     var body: some View {
         ZStack(alignment: .top) {
             VStack {
-                HStack {
-                    HStack {
-                        Button(action: {
-                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
-                                if let document = snapshot?.documents.first {
-                                    document.reference.setData(["status": "accepted"], merge: true)
-                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
-                                    self.store.updateProp(prop: updatedProp)
-                                    self.show = false
-                                    self.active = false
-                                    self.activeIndex = -1
-                                }
-                            }
-                        }) {
-                            HStack {
-                                Text("ACCEPT")
-                                    .font(.system(size: 18))
-                            }
-                            .frame(minWidth: 0, maxWidth: 120)
-                            .padding()
-                            .foregroundColor(.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(Color.white, lineWidth: 2))
-                                .background(Color.green.cornerRadius(40))
-
-                        }
-                    }
-
-                    Spacer()
-
-                    HStack {
-                        Button(action: {
-                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
-                                if let document = snapshot?.documents.first {
-                                    document.reference.setData(["status": "rejected"], merge: true)
-                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
-                                    self.store.updateProp(prop: updatedProp)
-                                    self.show = false
-                                    self.active = false
-                                    self.activeIndex = -1
-                                }
-                            }
-                        }) {
-                            HStack {
-                                Text("REJECT")
-                                    .font(.system(size: 18))
-                            }
-                            .frame(minWidth: 0, maxWidth: 120)
-                            .padding()
-                            .foregroundColor(.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(Color.white, lineWidth: 2))
-                                .background(Color.red.cornerRadius(40))
-                        }
-                    }
-                }
-                .padding(.bottom, 30)
-                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" ? 1 : 0)
-
                 VStack(alignment: .leading, spacing: 30.0) {
                     Text("Prop Info")
                         .font(.title).bold()
-                    Text("Proposal: \(prop.proposal)")
-                    Text("Opponent: \(opponentName)")
+                    Text(prop.proposal)
                 }
+                .animation(nil)
+                .opacity(show ? 1 : 0)
+                .offset(y: -100)
             }
             .padding(30)
             .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? .infinity : 280, alignment: .top)
-            .offset(y: show ? 460 : 0)
+            .offset(y: show ? 500 : 0)
 
             VStack(spacing: 30) {
                 HStack {
@@ -199,27 +191,90 @@ struct PropView: View {
                 }
                 .opacity(show ? 1 : 0)
                 .offset(y: -60)
-                Text(prop.proposal)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(width: 160)
-                    .offset(y: show ? 0 : -36)
-                Text(dateFormatter.string(from: prop.createdAt))
-                    .font(.system(.subheadline))
-                    .foregroundColor(.white)
-                    .offset(y: show ? 0 : -36)
+
+                VStack(spacing: 20) {
+                    Text(show ? opponentName : prop.proposal)
+                        .font(.system(size: show ? 30 : 24, weight: show ? .heavy : .bold))
+                        .foregroundColor(.white)
+                        .frame(width: screen.width - (show ? 80 : 110))
+                        .offset(y: show ? 0 : -36)
+                        .animation(nil)
+                    Text(prop.endingAt < Date() ? "ENDED" : prop.status == "rejected" ? "REJECTED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
+                        .font(.system(.subheadline))
+                        .foregroundColor(.white)
+                        .offset(y: show ? 0 : -36)
+                }
+                .offset(y: prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 0 : 30)
+
+                HStack {
+                    HStack {
+                        Button(action: {
+                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
+                                if let document = snapshot?.documents.first {
+                                    document.reference.setData(["status": "accepted"], merge: true)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
+                                    self.store.updateProp(prop: updatedProp)
+                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Accepted!", body: "Good luck! 🤘🤘🤘")
+                                    }
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text("ACCEPT")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18))
+                            }
+                            .padding(12)
+                            .padding(.horizontal, 30)
+                            .background(Color.green)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            .shadow(color: Color.green.opacity(0.3), radius: 20, x: 0, y: 20)
+                        }
+                    }
+
+                    Spacer()
+
+                    HStack {
+                        Button(action: {
+                            Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
+                                if let document = snapshot?.documents.first {
+                                    document.reference.setData(["status": "rejected"], merge: true)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
+                                    self.store.updateProp(prop: updatedProp)
+                                    DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
+                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Rejected", body: "😞😞😞")
+                                    }
+                                }
+                            }
+                        }) {
+                            HStack {
+                                Text("REJECT")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18))
+                            }
+                            .padding(12)
+                            .padding(.horizontal, 30)
+                            .background(Color.red)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            .shadow(color: Color.red.opacity(0.3), radius: 20, x: 0, y: 20)
+                        }
+                    }
+                }
+                .padding(.top, show ? 12 : 0)
+                .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
             }
             .padding(show ? 30 : 20)
             .padding(.top, show ? 30 : 0)
-            .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 460 : 280)
-            .background(Color.blue)
+            .frame(maxWidth: show ? .infinity : screen.width - 60, maxHeight: show ? 400 : 280)
+            .background(prop.endingAt < Date() || prop.status == "rejected" ? Color.red : Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-            .shadow(color: Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
+            .shadow(color: prop.endingAt < Date() ? Color.red.opacity(0.3) : Color.blue.opacity(0.3), radius: 20, x: 0, y: 20)
             .gesture(
                 show ?
                     DragGesture().onChanged { value in
-                        guard value.translation.height < 300  else { return }
-                        guard value.translation.height > 0  else { return }
+                        guard value.translation.height < 300 else { return }
+                        guard value.translation.height > 0 else { return }
                         self.activeView = value.translation
                     }
                     .onEnded { _ in
@@ -272,87 +327,9 @@ struct PropView: View {
 
     func getFriend(uid: String?, completion: @escaping(String) -> ()) {
         Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-            if let document = snapshot?.documents.map({ $0.data() }).first, let userFirstName = document["firstName"] as? String {
-                completion(userFirstName)
+            if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String {
+                completion(username)
             }
         }
     }
 }
-
-//    func addFireStoreDB() {
-//        let db = Firestore.firestore()
-//
-//        /// Add new document
-//        db.collection("airline").addDocument(data: ["year": 1990, "type": "Avianca", "origin": "Colombia"])
-//
-//        /// Getting document ID
-//        let newDocument = db.collection("airline").document()
-//        newDocument.setData(["year": 1990, "type": "LATAM", "origin": "Panama", "id": newDocument.documentID])
-//
-//        /// Add a document with a specific ID
-//        db.collection("airline").document("asian_airlines").setData(["year": 1987, "type": "Singapore Air", "origin": "Korea", "test": "test"])
-//
-//        /// Using completion handler
-//        db.collection("airline").addDocument(data: ["asdf": "asdf"]) { (error) in
-//            if let error = error {
-//                print("there was an error.")
-//            } else {
-//                // error is nil, operation successful
-//            }
-//        }
-//
-//        /// delete a document
-//        db.collection("airline").document("IvpxFuG0F4hvmKHZREhG").delete()
-//
-//        /// delete a single field
-//        db.collection("airline").document("asian_airlines").updateData(["test": FieldValue.delete()])
-//
-//        /// detect error, use completion handler
-//        db.collection("airline").document("IvpxFuG0F4hvmKHZREhG").delete { (error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                // successful
-//            }
-//        }
-//
-//        /// read a specific document
-//        db.collection("airline").document("asian_airlines").getDocument { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                if let snapshot = snapshot, snapshot.exists {
-//                    guard let documentData = snapshot.data() else {
-//                        return
-//                    }
-//                    print(documentData)
-//                }
-//            }
-//        }
-//
-//        /// get all documents
-//        db.collection("airline").getDocuments { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                if let snapshot = snapshot {
-//                    for document in snapshot.documents {
-//                        print(document.data())
-//                    }
-//                }
-//            }
-//        }
-//
-//        /// get subset of documents
-//        db.collection("airline").whereField("year", isEqualTo: 1987).getDocuments { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                if let snapshot = snapshot {
-//                    for document in snapshot.documents {
-//                        print(document.data())
-//                    }
-//                }
-//            }
-//        }
-//    }

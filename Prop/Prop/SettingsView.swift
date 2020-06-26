@@ -14,32 +14,49 @@ struct SettingsView: View {
     @State var showAlert = false
 
     var body: some View {
-        VStack {
+        VStack(spacing: 24) {
             HStack {
-                Text("User Settings")
+                Text("Settings")
+                    .font(.largeTitle).bold()
+                    .padding()
+                    .padding(.leading, 24)
                 Spacer()
-                Button(action: {
-                    self.showAlert = true
-                }) {
-                Text("Logout")
+            }
+
+            Form {
+                Section {
+                    HStack {
+                        Spacer()
+                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")" + " " + "(\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""))")
+                        Spacer()
+                    }
                 }
-                .alert(isPresented: $showAlert) {
-                    Alert(title: Text("Logging out..."), message: Text("Are you sure you want to logout?"), primaryButton: .default(Text("Yes"), action: {
 
-                        // logout of Firebase
-                        do {
-                            try Auth.auth().signOut()
-                            UserDefaults.standard.set(false, forKey: "isLogged")
-                            self.user.isLogged = false
-                            } catch let err {
-                                print(err)
+                Section {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            self.showAlert = true
+                        }) {
+                            Text("Logout")
                         }
+                        .alert(isPresented: $showAlert) {
+                            Alert(title: Text("Logging out..."), message: Text("Are you sure you want to logout?"), primaryButton: .default(Text("Yes"), action: {
+                                do {
+                                    try Auth.auth().signOut()
+                                    UserDefaults.standard.set(false, forKey: "isLogged")
+                                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                                    self.user.isLogged = false
+                                } catch let err {
+                                    print(err)
+                                }
 
-                    }), secondaryButton: .default(Text("Cancel")))
+                            }), secondaryButton: .default(Text("Cancel")))
+                        }
+                        Spacer()
+                    }
                 }
             }
-            .padding()
-
             Spacer()
         }
     }
