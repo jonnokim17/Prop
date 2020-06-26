@@ -194,7 +194,7 @@ struct PropView: View {
 
                 VStack(spacing: 20) {
                     Text(show ? opponentName : prop.proposal)
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.system(size: show ? 30 : 24, weight: show ? .heavy : .bold))
                         .foregroundColor(.white)
                         .frame(width: screen.width - (show ? 80 : 110))
                         .offset(y: show ? 0 : -36)
