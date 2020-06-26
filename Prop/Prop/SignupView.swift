@@ -60,34 +60,38 @@ struct SignupView: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            Color(#colorLiteral(red: 0.1215686277, green: 0.01176470611, blue: 0.4235294163, alpha: 1))
                 .edgesIgnoringSafeArea(.all)
             ZStack {
                 VStack {
                     Text("Create Account")
                         .font(.system(size: 32, weight: .heavy))
+                        .foregroundColor(.white)
                     Text("Sign up to get started")
                         .font(.system(size: 18, weight: .medium))
                         .foregroundColor(Color.gray)
 
                     VStack(spacing: 18) {
-                        TextField("Username", text: $username)
+                        CustomTextField(placeholder: Text("Username").foregroundColor(Color.white.opacity(0.6)), text: $username)
                             .font(.system(size: 14))
+                            .foregroundColor(.white)
                             .padding(12)
                             .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
                             .onTapGesture {
                                 self.isFocused = true
                         }
-                        TextField("Email Address", text: $email)
+                        CustomTextField(placeholder: Text("Email Address").foregroundColor(Color.white.opacity(0.6)), text: $email)
                             .keyboardType(.emailAddress)
                             .font(.system(size: 14))
+                            .foregroundColor(.white)
                             .padding(12)
                             .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
                             .onTapGesture {
                                 self.isFocused = true
                         }
-                        SecureField("Password", text: $password)
+                        CustomSecureField(placeholder: Text("Password").foregroundColor(Color.white.opacity(0.6)), text: $password)
                             .font(.system(size: 14))
+                            .foregroundColor(.white)
                             .padding(12)
                             .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
                             .onTapGesture {
