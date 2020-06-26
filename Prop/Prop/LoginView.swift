@@ -20,12 +20,8 @@ struct LoginView: View {
 
     @EnvironmentObject var user: UserStore
 
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-
     private func login() {
-        self.hideKeyboard()
+        hideKeyboard()
         self.isFocused = false
         self.isLoading = true
 
@@ -132,7 +128,7 @@ struct LoginView: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                         .padding()
-                        .offset(y: isFocused ? -120 : 0)
+                        .offset(y: isFocused && screen.height > 700 ? -140 : 0)
 
                         Spacer()
 
@@ -146,14 +142,14 @@ struct LoginView: View {
                                     .foregroundColor(Color.blue)
                             }
                         }
-                        .offset(y: isFocused ? -120 : 0)
+                        .offset(y: isFocused && screen.height > 700 ? -140 : 0)
                     }
                 }
-                .offset(y: isFocused ? -200 : 0)
+                .offset(y: isFocused ? screen.height < 700 ? -240 : -200 : 0)
                 .animation(.easeInOut)
                 .onTapGesture {
                     self.isFocused = false
-                    self.hideKeyboard()
+                    hideKeyboard()
                 }
 
                 if isLoading {
