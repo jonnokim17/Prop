@@ -42,7 +42,24 @@ struct SearchView: View {
             }
         }
         .onAppear {
-            self.getAllUsers()
+            if Auth.auth().currentUser?.email == "jonnokim17@gmail.com" {
+                self.getAllUsers()
+            } else {
+                self.getMasterUser()
+            }
+        }
+    }
+
+    func getMasterUser() {
+        Firestore.firestore().collection("users").getDocuments { (snapshot, error) in
+            if let documents = snapshot?.documents.map({ $0.data() }) {
+                for document in documents where document["uid"] as? String == "syh2TbwWs2etfB6ZdAVaWIOG9lU2" {
+                    if let username = document["username"] as? String, let uid = document["uid"] as? String {
+                        let dictToAdd = ["username": username, "uid": uid]
+                        self.friendsArray.append(dictToAdd)
+                    }
+                }
+            }
         }
     }
 
