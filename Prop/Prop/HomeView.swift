@@ -221,7 +221,7 @@ struct PropView: View {
                             }
                         }) {
                             HStack {
-                                Text("ACCEPT")
+                                Text("👍")
                                     .foregroundColor(.white)
                                     .font(.system(size: 18))
                             }
@@ -249,7 +249,7 @@ struct PropView: View {
                             }
                         }) {
                             HStack {
-                                Text("REJECT")
+                                Text("👎")
                                     .foregroundColor(.white)
                                     .font(.system(size: 18))
                             }
@@ -262,6 +262,7 @@ struct PropView: View {
                     }
                 }
                 .padding(.top, show ? 12 : 0)
+                .padding(.horizontal, show ? 40 : 20)
                 .opacity(prop.bettors.last != Auth.auth().currentUser?.uid && prop.status == "pending" && prop.endingAt > Date() ? 1 : 0)
             }
             .padding(show ? 30 : 20)
