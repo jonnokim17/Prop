@@ -63,12 +63,13 @@ struct SignupView: View {
                 VStack(spacing: 18) {
                     TextField("Username", text: $username)
                         .font(.system(size: 14))
-                    .padding(12)
+                        .padding(12)
                         .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
 
                     TextField("Email Address", text: $email)
+                        
                         .font(.system(size: 14))
-                    .padding(12)
+                        .padding(12)
                         .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
 
                     SecureField("Password", text: $password)
@@ -98,6 +99,7 @@ struct SignupView: View {
                 Spacer()
                     .padding(.horizontal, 32)
             }
+            .offset(y: -40)
 
             if isLoading {
                 LoadingView()
