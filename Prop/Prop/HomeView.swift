@@ -94,7 +94,7 @@ struct HomeView: View {
                     }
                     .padding()
 
-                    if !store.isLoading && store.props.isEmpty {
+                    if !store.isLoading && store.props.filter { return propStatus == .all ? true : $0.status == propStatus.rawValue }.isEmpty {
                         Text("No Prop Available")
                             .offset(y: screen.height/2 - 200)
                             .animation(nil)
