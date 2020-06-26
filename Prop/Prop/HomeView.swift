@@ -23,10 +23,6 @@ struct HomeView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(active ? 0.5 : 0)
-                .animation(.linear)
-                .edgesIgnoringSafeArea(.all)
-
             ScrollView {
                 VStack(spacing: 24) {
                     HStack {
