@@ -74,7 +74,7 @@ struct ComposeView: View {
                             self.isDatePickerOpen = false
                         }
                     }
-                    .frame(height: isDatePickerOpen ? 500 : 150)
+                    .frame(height: isDatePickerOpen ? 400 : 150)
 
                     VStack {
                         Button(action: {
