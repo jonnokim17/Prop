@@ -67,7 +67,7 @@ struct SignupView: View {
                         .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
 
                     TextField("Email Address", text: $email)
-                        
+                        .keyboardType(.emailAddress)
                         .font(.system(size: 14))
                         .padding(12)
                         .background(RoundedRectangle(cornerRadius: 5).strokeBorder(Color.gray, lineWidth: 1))
