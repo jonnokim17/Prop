@@ -20,12 +20,8 @@ struct LoginView: View {
 
     @EnvironmentObject var user: UserStore
 
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-
     private func login() {
-        self.hideKeyboard()
+        hideKeyboard()
         self.isFocused = false
         self.isLoading = true
 
@@ -151,7 +147,7 @@ struct LoginView: View {
                 .animation(.easeInOut)
                 .onTapGesture {
                     self.isFocused = false
-                    self.hideKeyboard()
+                    hideKeyboard()
                 }
 
                 if isLoading {

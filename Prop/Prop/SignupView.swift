@@ -20,14 +20,10 @@ struct SignupView: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.presentationMode) private var presentationMode
 
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-
     private func signUp() {
         self.isLoading = true
         self.isFocused = false
-        self.hideKeyboard()
+        hideKeyboard()
         Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
             self.isLoading = false
             if let error = error {
@@ -130,7 +126,7 @@ struct SignupView: View {
         }
         .onTapGesture {
             self.isFocused = false
-            self.hideKeyboard()
+            hideKeyboard()
         }
     }
 }
