@@ -10,7 +10,6 @@ import SwiftUI
 import Firebase
 
 let ServerKey = "AAAASRQEUjg:APA91bHu8frbx_UlKFLZCwtfWBwFPA1fNkyC0oZQRoVKSai_75fc_bkDFqh4d25hHomyE6bAPlb5WaO06QiOqLCFsCJ10C9aQHXfkJ2MNpc7krBQA6LsF0bUjnadr7LiUN_gdApPnKu_"
-let ReceiverFCMToken = "c77c0YUDckB8qsuhuV6Lx8:APA91bH8x0oJc0tDEhy8u55dPiJrWRZy6j54moVehblp25Mx8Xv3XSBASGzcFSD2gQVHHwoUF6TOL52AVS062oOcXHKySfkOUjEz_GQnTRkIpEQHLK3VVZon4-ho-btf10b6lUNM_yKy"
 
 struct ComposeView: View {
     let db = Firestore.firestore()
