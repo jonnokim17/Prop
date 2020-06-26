@@ -18,8 +18,17 @@ struct HomeView: View {
     @State var show = false
     @State var active = false
     @State var activeIndex = -1
+    @State private var showingActionSheet = false
+    @State private var propStatus: PropStatus = .all
 
     let db = Firestore.firestore()
+
+    enum PropStatus: String {
+        case accepted
+        case rejected
+        case pending
+        case all
+    }
 
     var body: some View {
         ZStack {
@@ -31,7 +40,7 @@ struct HomeView: View {
                             .frame(width: 100)
                             .padding(.leading, 24)
                             .blur(radius: active ? 20 : 0)
-                            Spacer()
+                        Spacer()
                         Button(action: {
                             self.showPropCompose.toggle()
                         }) {
@@ -49,6 +58,39 @@ struct HomeView: View {
                         .sheet(isPresented: $showPropCompose) {
                             ComposeView(store: self.store)
                         }
+                        .padding(8)
+
+                        Button(action: {
+                            self.showingActionSheet.toggle()
+                        }) {
+                            Image(systemName: "line.horizontal.3.decrease.circle")
+                                .renderingMode(.original)
+                                .font(.system(size: 18, weight: .medium))
+                                .frame(width: 44, height: 44)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+                                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10)
+                                .blur(radius: active ? 20 : 0)
+                        }
+                        .animation(nil)
+                        .actionSheet(isPresented: $showingActionSheet) { () -> ActionSheet in
+                            ActionSheet(title: Text("Filter Props By"), message: nil, buttons: [
+                                .default(Text("Accepted"), action: {
+                                    self.propStatus = .accepted
+                                }),
+                                .default(Text("Rejected"), action: {
+                                    self.propStatus = .rejected
+                                }),
+                                .default(Text("Pending"), action: {
+                                    self.propStatus = .pending
+                                }),
+                                .default(Text("Show All"), action: {
+                                    self.propStatus = .all
+                                }),
+                                .cancel()
+                            ])
+                        }
                     }
                     .padding()
 
@@ -57,14 +99,14 @@ struct HomeView: View {
                             .offset(y: screen.height/2 - 200)
                             .animation(nil)
                     } else {
-                        ForEach(store.props.indices, id: \.self) { index in
+                        ForEach(store.props.filter { return propStatus == .all ? true : $0.status == propStatus.rawValue }.indices, id: \.self) { index in
                             GeometryReader { geometry in
                                 PropView(
                                     store: self.store,
                                     show: self.$store.props[index].show,
                                     active: self.$active,
                                     index: index, activeIndex: self.$activeIndex,
-                                    prop: self.store.props[index]
+                                    prop: self.store.props.filter { return self.propStatus == .all ? true : $0.status == self.propStatus.rawValue }[index]
                                 )
                                     .offset(y: self.store.props[index].show ? -geometry.frame(in: .global).minY : 0)
                                     .opacity(self.activeIndex != index && self.active ? 0 : 1)
