@@ -142,7 +142,6 @@ struct PropView: View {
     @State var activeView = CGSize.zero
 
     var prop: Prop
-    @State var opponentName = ""
 
     var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -174,13 +173,6 @@ struct PropView: View {
 
             VStack(spacing: 30) {
                 HStack {
-                    HStack {
-                        Text(prop.status.uppercased())
-                            .font(.system(size: 16, weight: .medium))
-                        Image(prop.status)
-                            .resizable()
-                            .frame(width: 36, height: 36)
-                    }
                     Spacer()
                     Image(systemName: "xmark")
                         .font(.system(size: 15, weight: .medium))
@@ -193,13 +185,19 @@ struct PropView: View {
                 .offset(y: -60)
 
                 VStack(spacing: 20) {
-                    Text(show ? opponentName : prop.proposal)
-                        .font(.system(size: show ? 30 : 24, weight: show ? .heavy : .bold))
-                        .foregroundColor(.white)
-                        .frame(width: screen.width - (show ? 80 : 110))
-                        .offset(y: show ? 0 : -36)
-                        .animation(nil)
-                    Text(prop.endingAt < Date() ? "ENDED" : prop.status == "rejected" ? "REJECTED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
+                    HStack {
+                        Text(show ? prop.status.uppercased() : prop.proposal)
+                        Image(prop.status)
+                            .resizable()
+                            .frame(width: 36, height: 36)
+                            .opacity(show ? 1 : 0)
+                    }
+                    .font(.system(size: show ? 28 : 24, weight: show ? .heavy : .bold))
+                    .foregroundColor(.white)
+                    .frame(width: screen.width - (show ? 80 : 110))
+                    .offset(x: show ? 0 : 24, y: show ? 0 : -36)
+                    .animation(nil)
+                    Text(prop.endingAt < Date() ? "ENDED" : "Ends on " + dateFormatter.string(from: prop.endingAt) + " at " + dateFormatter2.string(from: prop.endingAt))
                         .font(.system(.subheadline))
                         .foregroundColor(.white)
                         .offset(y: show ? 0 : -36)
@@ -319,18 +317,5 @@ struct PropView: View {
                 }
                 : nil
         )
-            .onAppear {
-                self.getFriend(uid: self.prop.bettors.filter { $0 != Auth.auth().currentUser?.uid }.first) { (name) in
-                self.opponentName = name
-            }
-        }
-    }
-
-    func getFriend(uid: String?, completion: @escaping(String) -> ()) {
-        Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
-            if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String {
-                completion(username)
-            }
-        }
     }
 }
