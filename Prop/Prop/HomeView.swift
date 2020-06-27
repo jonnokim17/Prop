@@ -182,7 +182,7 @@ struct PropView: View {
                         .clipShape(Circle())
                 }
                 .opacity(show ? 1 : 0)
-                .offset(y: -60)
+                .offset(y: -40)
 
                 VStack(spacing: 20) {
                     HStack {
