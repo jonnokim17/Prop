@@ -123,6 +123,9 @@ struct HomeView: View {
                 .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0))
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            self.store.refreshProps()
+        }
     }
 }
 

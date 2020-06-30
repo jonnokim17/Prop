@@ -63,6 +63,10 @@ class DataStore: ObservableObject {
         }
     }
 
+    func refreshProps() {
+        getProps()
+    }
+
     private func addLocationNotification(prop: Prop) {
         let content = UNMutableNotificationContent()
         content.title = "Prop has ended!"
