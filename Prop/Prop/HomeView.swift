@@ -162,9 +162,8 @@ struct PropView: View {
         ZStack(alignment: .top) {
             VStack {
                 VStack(alignment: .leading, spacing: 16.0) {
-                    Text("Prop Info")
-                        .font(.title).bold()
                     Text("\(prop.bettorUsernames.first ?? "") VS \(prop.bettorUsernames.last ?? "")")
+                        .font(.title).bold()
                     Text(prop.proposal)
                 }
                 .animation(nil)
