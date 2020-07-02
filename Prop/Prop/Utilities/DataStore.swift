@@ -33,12 +33,13 @@ class DataStore: ObservableObject {
                     for propDocument in documents {
                         if let proposal = propDocument["proposal"] as? String,
                             let bettors = propDocument["bettors"] as? [String],
+                            let bettorsUsernames = propDocument["bettorUsernames"] as? [String],
                             let createdAt = propDocument["createdAt"] as? Timestamp,
                             let endingAt = propDocument["endingAt"] as? Timestamp,
                             let status = propDocument["status"] as? String,
                             let id = propDocument["id"] as? String
                         {
-                            let prop = Prop(id: id, proposal: proposal, createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), status: status, show: false, bettors: bettors)
+                            let prop = Prop(id: id, proposal: proposal, createdAt: createdAt.dateValue(), endingAt: endingAt.dateValue(), status: status, show: false, bettors: bettors, bettorUsernames: bettorsUsernames)
                             self.addLocationNotification(prop: prop)
                             propData.append(prop)
                         }
@@ -85,12 +86,12 @@ class DataStore: ObservableObject {
         }
     }
 
-    static func sendMessageToUser(to token: String, title: String, body: String) {
+    static func sendMessageToUser(token: String, title: String, body: String, propId: String) {
         let urlString = "https://fcm.googleapis.com/fcm/send"
         guard let url = NSURL(string: urlString) else { return }
         let paramString: [String : Any] = ["to" : token,
                                            "notification" : ["title" : title, "body" : body],
-                                           "data" : ["user" : "test_id"]
+                                           "data" : ["propId" : propId]
         ]
         let request = NSMutableURLRequest(url: url as URL)
         request.httpMethod = "POST"
@@ -110,6 +111,33 @@ class DataStore: ObservableObject {
         }
         task.resume()
     }
+
+    static func getUsername(uid: String, completion: @escaping(String) -> ()) {
+        Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
+            if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String {
+                completion(username)
+            }
+        }
+    }
+
+    static func getBettors(uids: [String], completion: @escaping([String]) -> ()) {
+        var bettorsArray = [String]()
+        let group = DispatchGroup()
+
+        for uid in uids {
+            group.enter()
+            Firestore.firestore().collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snapshot, error) in
+                if let document = snapshot?.documents.map({ $0.data() }).first, let username = document["username"] as? String {
+                    bettorsArray.append(username)
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            completion(bettorsArray)
+        }
+    }
 }
 
 struct Prop: Identifiable {
@@ -120,4 +148,5 @@ struct Prop: Identifiable {
     var status: String
     var show: Bool
     var bettors: [String]
+    var bettorUsernames: [String]
 }

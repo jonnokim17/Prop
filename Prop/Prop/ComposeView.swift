@@ -22,6 +22,7 @@ struct ComposeView: View {
     @State private var isFocused = false
     @State private var isDatePickerOpen = false
     @State private var viewDidLoad = false
+    @State var isLoading = false
 
     @ObservedObject var store: DataStore
 
@@ -78,27 +79,36 @@ struct ComposeView: View {
 
                     VStack {
                         Button(action: {
+                            self.isLoading = true
                             let id = UUID().uuidString
-                            self.db.collection("props").addDocument(data: [
-                                "id": id,
-                                "createdAt": Date(),
-                                "status": "pending",
-                                "endingAt": self.endDate,
-                                "proposal": self.message,
-                                "bettors": [
-                                    self.selectedFriendUid,
-                                    Auth.auth().currentUser?.uid ?? ""
-                                ]]) { (error) in
+                            let currentUid = Auth.auth().currentUser?.uid ?? ""
+                            let bettorsUidArray = [self.selectedFriendUid, currentUid]
+
+                            DataStore.getBettors(uids: bettorsUidArray) { (bettorUsernames) in
+                                self.db.collection("props").addDocument(data: [
+                                    "id": id,
+                                    "createdAt": Date(),
+                                    "status": "pending",
+                                    "endingAt": self.endDate,
+                                    "proposal": self.message,
+                                    "bettors": bettorsUidArray,
+                                    "bettorUsernames": bettorUsernames
+                                ]) { (error) in
                                     if let error = error {
+                                        self.isLoading = false
                                         print(error.localizedDescription)
                                     } else {
-                                        let prop = Prop(id: id, proposal: self.message, createdAt: Date(), endingAt: self.endDate, status: "pending", show: false, bettors:  [self.selectedFriendUid,Auth.auth().currentUser?.uid ?? ""])
+                                        let prop = Prop(id: id, proposal: self.message, createdAt: Date(), endingAt: self.endDate, status: "pending", show: false, bettors: bettorsUidArray, bettorUsernames: bettorUsernames)
                                         DataStore.getFCMToken(uid: self.selectedFriendUid) { (fcmToken) in
-                                            DataStore.sendMessageToUser(to: fcmToken, title: "New Prop Received! 🚀🚀🚀", body: self.message)
-                                            self.store.addProp(prop: prop)
-                                            self.presentationMode.wrappedValue.dismiss()
+                                            DataStore.getUsername(uid: currentUid) { (username) in
+                                                self.isLoading = false
+                                                DataStore.sendMessageToUser(token: fcmToken, title: "New prop received from \(username)! 🚀", body: self.message, propId: id)
+                                                self.store.addProp(prop: prop)
+                                                self.presentationMode.wrappedValue.dismiss()
+                                            }
                                         }
                                     }
+                                }
                             }
                         }) {
                         Text("PROP")
@@ -107,10 +117,10 @@ struct ComposeView: View {
                         }
                         .padding(.vertical, 20)
                         .padding(.horizontal, 60)
-                        .background(Color.green.opacity(self.selectedFriend.isEmpty || self.message.isEmpty ? 0.3 : 1))
+                        .background(Color.green.opacity(self.selectedFriend.isEmpty || self.message.isEmpty || isLoading ? 0.3 : 1))
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-                        .disabled(self.selectedFriend.isEmpty || self.message.isEmpty ? true : false )
+                        .disabled(selectedFriend.isEmpty || message.isEmpty || isLoading ? true : false )
                         Spacer()
                     }
                     .padding(.horizontal, 30)
@@ -125,6 +135,10 @@ struct ComposeView: View {
                 Spacer()
             }
             .offset(y: isFocused && screen.height < 700 ? -80 : 0)
+
+            if isLoading {
+                LoadingView()
+            }
         }
     }
 }

@@ -161,9 +161,10 @@ struct PropView: View {
     var body: some View {
         ZStack(alignment: .top) {
             VStack {
-                VStack(alignment: .leading, spacing: 30.0) {
+                VStack(alignment: .leading, spacing: 16.0) {
                     Text("Prop Info")
                         .font(.title).bold()
+                    Text("\(prop.bettorUsernames.first ?? "") VS \(prop.bettorUsernames.last ?? "")")
                     Text(prop.proposal)
                 }
                 .animation(nil)
@@ -213,10 +214,10 @@ struct PropView: View {
                             Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
                                 if let document = snapshot?.documents.first {
                                     document.reference.setData(["status": "accepted"], merge: true)
-                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "accepted", show: self.prop.show, bettors: self.prop.bettors, bettorUsernames: self.prop.bettorUsernames)
                                     self.store.updateProp(prop: updatedProp)
                                     DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
-                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Accepted!", body: "Good luck! 🤘🤘🤘")
+                                        DataStore.sendMessageToUser(token: fcmToken, title: "\(self.prop.bettorUsernames.last ?? "") accepted your prop!", body: "Good luck! 🤘🤘", propId: updatedProp.id)
                                     }
                                 }
                             }
@@ -241,10 +242,10 @@ struct PropView: View {
                             Firestore.firestore().collection("props").whereField("id", isEqualTo: self.prop.id).getDocuments { (snapshot, error) in
                                 if let document = snapshot?.documents.first {
                                     document.reference.setData(["status": "rejected"], merge: true)
-                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors)
+                                    let updatedProp = Prop(id: self.prop.id, proposal: self.prop.proposal, createdAt: self.prop.createdAt, endingAt: self.prop.endingAt, status: "rejected", show: self.prop.show, bettors: self.prop.bettors, bettorUsernames: self.prop.bettorUsernames)
                                     self.store.updateProp(prop: updatedProp)
                                     DataStore.getFCMToken(uid: self.prop.bettors.last ?? "") { (fcmToken) in
-                                        DataStore.sendMessageToUser(to: fcmToken, title: "Prop Rejected", body: "😞😞😞")
+                                        DataStore.sendMessageToUser(token: fcmToken, title: "\(self.prop.bettorUsernames.last ?? "") rejected your prop.", body: "😞😞😞", propId: updatedProp.id)
                                     }
                                 }
                             }
