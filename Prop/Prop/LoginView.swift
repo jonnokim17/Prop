@@ -128,7 +128,7 @@ struct LoginView: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                         .padding()
-                        .offset(y: isFocused && screen.height > 700 ? -140 : 0)
+                        .offset(y: isFocused && screen.height > 700 ? -80 : 0)
 
                         Spacer()
 
@@ -142,7 +142,7 @@ struct LoginView: View {
                                     .foregroundColor(Color.blue)
                             }
                         }
-                        .offset(y: isFocused && screen.height > 700 ? -140 : 0)
+                        .offset(y: isFocused && screen.height > 700 ? -80 : 0)
                     }
                 }
                 .offset(y: isFocused ? screen.height < 700 ? -240 : -200 : 0)
